@@ -1,1 +1,22 @@
-{"runs": []}
+{
+  "runs": [
+    {
+      "date": "2026-09-28",
+      "seed": "bootstrap",
+      "budget": 2,
+      "units": [
+        "bootstrap",
+        "initial-import-90pct"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 2019,
+        "simplify-new-grad-positions": 474,
+        "speedyapply-2027-swe": 2677,
+        "speedyapply-2027-ai": 2026
+      }
+    }
+  ]
+}
