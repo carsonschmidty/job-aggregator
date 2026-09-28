@@ -1,7 +1,7 @@
 # Contributing
 
 1. Open an issue first (labels: `data`, `parser`, `source`, `chore`, `docs`, `bug`) with context and acceptance criteria.
-2. Branch from `main`: `agent/issue-<n>` or `data/YYYY-MM-DD-<slug>`.
+2. Branch from `main`: `feat/issue-<n>` or `data/YYYY-MM-DD-<slug>`.
 3. Use conventional commits: `feat(parser):`, `data:`, `fix:`, `docs:`, `test:`, `chore:`.
 4. Open a PR that says `Closes #<n>`, with test evidence.
 5. CI must pass (`pytest` and `scripts.validate`). Squash-merge and delete the branch.
