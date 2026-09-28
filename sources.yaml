@@ -1,0 +1,49 @@
+# Registry of listing sources. `seed: true` sources are never removed without an issue
+# documenting abandonment. All are public GitHub repos, read-only.
+# None of the four seed repos publishes a license; listings are facts (company, role,
+# location, apply link) and are attributed per record via `sources[]`. See docs/SOURCES.md.
+sources:
+  - name: simplify-summer2027-internships
+    repo: SimplifyJobs/Summer2027-Internships
+    url: https://github.com/SimplifyJobs/Summer2027-Internships
+    parser: simplify
+    seed: true
+    added: 2026-09-28
+    license: none-published
+    files:
+      - {raw_url: "https://raw.githubusercontent.com/SimplifyJobs/Summer2027-Internships/dev/README.md", job_type: internship}
+  - name: simplify-new-grad-positions
+    repo: SimplifyJobs/New-Grad-Positions
+    url: https://github.com/SimplifyJobs/New-Grad-Positions
+    parser: simplify
+    seed: true
+    added: 2026-09-28
+    license: none-published
+    files:
+      - {raw_url: "https://raw.githubusercontent.com/SimplifyJobs/New-Grad-Positions/dev/README.md", job_type: new_grad}
+  - name: speedyapply-2027-swe
+    repo: speedyapply/2027-SWE-College-Jobs
+    url: https://github.com/speedyapply/2027-SWE-College-Jobs
+    parser: speedyapply
+    seed: true
+    added: 2026-09-28
+    license: none-published
+    category: swe
+    files:
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-SWE-College-Jobs/main/README.md", job_type: internship}
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-SWE-College-Jobs/main/INTERN_INTL.md", job_type: internship}
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-SWE-College-Jobs/main/NEW_GRAD_USA.md", job_type: new_grad}
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-SWE-College-Jobs/main/NEW_GRAD_INTL.md", job_type: new_grad}
+  - name: speedyapply-2027-ai
+    repo: speedyapply/2027-AI-College-Jobs
+    url: https://github.com/speedyapply/2027-AI-College-Jobs
+    parser: speedyapply
+    seed: true
+    added: 2026-09-28
+    license: none-published
+    category: ai_ml_data
+    files:
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-AI-College-Jobs/main/README.md", job_type: internship}
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-AI-College-Jobs/main/INTERN_INTL.md", job_type: internship}
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-AI-College-Jobs/main/NEW_GRAD_USA.md", job_type: new_grad}
+      - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-AI-College-Jobs/main/NEW_GRAD_INTL.md", job_type: new_grad}
