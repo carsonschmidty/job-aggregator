@@ -51,6 +51,24 @@
         "speedyapply-2027-swe": 2663,
         "speedyapply-2027-ai": 2029
       }
+    },
+    {
+      "date": "2026-10-01",
+      "seed": "1cbeb6c9",
+      "budget": 2,
+      "units": [
+        "ingest-2026-10-01",
+        "source-review-2026-10"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1982,
+        "simplify-new-grad-positions": 486,
+        "speedyapply-2027-swe": 2652,
+        "speedyapply-2027-ai": 2029
+      }
     }
   ]
 }

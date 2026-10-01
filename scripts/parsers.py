@@ -84,4 +84,43 @@ def parse_speedyapply(text: str, job_type: str, category: str) -> list[dict]:
     return rows
 
 
-PARSERS = {"simplify": parse_simplify, "speedyapply": parse_speedyapply}
+_MD_LINK = re.compile(r"\]\((https?://[^)\s]+)\)")
+_TITLE_CATEGORY = (
+    ("quant", "quant"), ("product manag", "pm"), ("machine learning", "ai_ml_data"),
+    ("data scien", "ai_ml_data"), ("hardware", "hardware"), ("software", "swe"),
+)
+
+
+def _title_category(title: str) -> str | None:
+    low = title.lower()
+    return next((cat for needle, cat in _TITLE_CATEGORY if needle in low), None)
+
+
+def parse_applyguy(text: str, job_type: str) -> list[dict]:
+    """ApplyGuy READMEs: markdown tables whose Actions cell ends with the original listing link."""
+    rows, cols = [], None
+    for line in text.splitlines():
+        if not line.startswith("|"):
+            cols = None if line.strip() else cols
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if cells and cells[0] == "Company":
+            cols = [c.lower() for c in cells]
+            continue
+        if cols is None or set(line.replace("|", "").strip()) <= {"-", " ", ":"}:
+            continue
+        rec = dict(zip(cols, cells))
+        links = _MD_LINK.findall(rec.get("actions", ""))
+        title = _text(rec.get("role", ""))
+        if len(links) < 2 or not title:
+            continue  # first link is the applyguy.ai referral; the second is the original posting
+        rows.append({
+            "company": _text(rec.get("company", "")), "title": title,
+            "location": _text(rec.get("location", "")), "apply_url": links[-1],
+            "url": links[-1], "category": _title_category(title), "job_type": job_type,
+            "salary": None, **_flags(title),
+        })
+    return rows
+
+
+PARSERS = {"simplify": parse_simplify, "speedyapply": parse_speedyapply, "applyguy": parse_applyguy}
