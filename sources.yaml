@@ -47,3 +47,12 @@ sources:
       - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-AI-College-Jobs/main/INTERN_INTL.md", job_type: internship}
       - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-AI-College-Jobs/main/NEW_GRAD_USA.md", job_type: new_grad}
       - {raw_url: "https://raw.githubusercontent.com/speedyapply/2027-AI-College-Jobs/main/NEW_GRAD_INTL.md", job_type: new_grad}
+  - name: applyguy-2027-internships
+    repo: ApplyGuy/2027-Internships
+    url: https://github.com/ApplyGuy/2027-Internships
+    parser: applyguy
+    seed: false
+    added: 2026-10-01
+    license: MIT
+    files:
+      - {raw_url: "https://raw.githubusercontent.com/ApplyGuy/2027-Internships/main/README.md", job_type: internship}

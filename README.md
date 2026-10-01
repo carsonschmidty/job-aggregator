@@ -12,6 +12,7 @@ Data lives in [`data/jobs.jsonl`](data/jobs.jsonl): one JSON object per line.
 | [SimplifyJobs/New-Grad-Positions](https://github.com/SimplifyJobs/New-Grad-Positions) | New grad by category |
 | [speedyapply/2027-SWE-College-Jobs](https://github.com/speedyapply/2027-SWE-College-Jobs) | SWE internships and new grad, USA and international |
 | [speedyapply/2027-AI-College-Jobs](https://github.com/speedyapply/2027-AI-College-Jobs) | AI/ML internships and new grad, USA and international |
+| [ApplyGuy/2027-Internships](https://github.com/ApplyGuy/2027-Internships) | Internships, MIT licensed; category inferred from title, may be null |
 
 All listings are attributed to their origin in each record's `sources[]`. The registry is [`sources.yaml`](sources.yaml); see [`docs/SOURCES.md`](docs/SOURCES.md) for licensing notes and the monthly source-review policy.
 
@@ -26,7 +27,7 @@ Records are updated in place by `id`. Records are never deleted; a listing that 
 | `apply_url` | string | Direct application link, tracking params intact |
 | `url` | string | Detail page if the source offers one, else `apply_url` |
 | `sources` | array | `[{source, source_url}]`, one entry per feeder listing it |
-| `category` | string | `swe`, `pm`, `ai_ml_data`, `quant`, `hardware` |
+| `category` | string or null | `swe`, `pm`, `ai_ml_data`, `quant`, `hardware`; null when the source gives no category and the title is ambiguous |
 | `job_type` | string | `internship` or `new_grad` |
 | `first_seen`, `last_seen` | date | ISO dates |
 | `status` | string | `open` or `closed` |

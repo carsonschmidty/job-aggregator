@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.parsers import parse_simplify, parse_speedyapply
+from scripts.parsers import parse_applyguy, parse_simplify, parse_speedyapply
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -21,3 +21,12 @@ def test_speedyapply_rows_salary_and_linkless_rows():
     assert [r["company"] for r in rows] == ["Microsoft", "Amazon"]
     assert rows[0]["salary"] == "$168k/yr" and rows[1]["salary"] is None
     assert rows[0]["job_type"] == "new_grad" and rows[0]["category"] == "swe"
+
+
+def test_applyguy_original_link_and_category():
+    rows = parse_applyguy((FIX / "applyguy.md").read_text(encoding="utf-8"), "internship")
+    assert len(rows) == 3  # row with only the referral link is skipped
+    assert all("applyguy.ai" not in r["apply_url"] for r in rows)
+    assert rows[0]["company"] == "Allegion" and rows[0]["category"] == "swe"
+    assert rows[0]["apply_url"].startswith("https://allegion.wd5.myworkdayjobs.com/")
+    assert rows[0]["job_type"] == "internship" and rows[0]["salary"] is None

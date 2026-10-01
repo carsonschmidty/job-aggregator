@@ -19,7 +19,7 @@ from pathlib import Path
 import yaml
 
 from .common import ROOT, SCHEMA_VERSION, is_fuzzy_match, load_store, make_id, normalize, save_store
-from .parsers import parse_simplify, parse_speedyapply
+from .parsers import parse_applyguy, parse_simplify, parse_speedyapply
 
 UA = "job-aggregator/0.1 (+https://github.com; read-only public README fetch)"
 GUARD = 0.30  # max allowed row-count swing per source between runs
@@ -41,6 +41,8 @@ def parse_source(src: dict, offline: Path | None) -> list[dict]:
         text = fetch(f["raw_url"], offline)
         if src["parser"] == "simplify":
             parsed = parse_simplify(text, f["job_type"])
+        elif src["parser"] == "applyguy":
+            parsed = parse_applyguy(text, f["job_type"])
         else:
             parsed = parse_speedyapply(text, f["job_type"], src["category"])
         for r in parsed:
