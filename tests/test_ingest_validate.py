@@ -32,6 +32,17 @@ def test_close_missing_only_touches_live_sources():
     assert {r["company"]: r["status"] for r in store} == {"A": "closed", "B": "open"}
 
 
+def test_fuzzy_matched_record_is_not_closed():
+    store, seen = [], set()
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1")], "2026-10-01")
+    incoming = [rec("Acme", "SWE Intern.", "https://a.com/other", location="NYC, NY")]
+    assert incoming[0]["id"] != store[0]["id"]
+    ingest.merge(store, incoming, "2026-10-02", seen)
+    assert seen == {store[0]["id"]}
+    assert ingest.close_missing(store, seen, {"s1"}, "2026-10-02") == 0
+    assert store[0]["status"] == "open" and store[0]["last_seen"] == "2026-10-02"
+
+
 def test_guard_blocks_large_swings_only():
     assert ingest.guard_ok("x", 100, {}) is True
     assert ingest.guard_ok("x", 120, {"x": 100}) is True

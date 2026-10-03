@@ -77,8 +77,13 @@ def keep(rec_id: str, fraction: float) -> bool:
     return int(rec_id[:8], 16) / 0xFFFFFFFF < fraction
 
 
-def merge(store: list[dict], incoming: list[dict], today: str) -> dict:
-    """Merge incoming records into store in place; returns counters."""
+def merge(store: list[dict], incoming: list[dict], today: str, seen: set[str] | None = None) -> dict:
+    """Merge incoming records into store in place; returns counters.
+
+    `seen` collects the id of every store record an incoming row landed on. A fuzzy
+    match lands on a record whose id differs from the incoming row's own id.
+    """
+    seen = set() if seen is None else seen
     by_id = {r["id"]: r for r in store}
     by_company: dict[str, list[dict]] = {}
     for r in store:
@@ -91,8 +96,10 @@ def merge(store: list[dict], incoming: list[dict], today: str) -> dict:
             store.append(rec)
             by_id[rec["id"]] = rec
             by_company.setdefault(normalize(rec["company"]), []).append(rec)
+            seen.add(rec["id"])
             stats["new"] += 1
             continue
+        seen.add(hit["id"])
         stats["duplicates_rejected"] += 1
         known = {(s["source"]) for s in hit["sources"]}
         if rec["sources"][0]["source"] not in known:
@@ -129,8 +136,9 @@ def main(argv=None) -> int:
         incoming += [r for raw in rows if keep((r := to_record(dict(raw), args.today))["id"], args.sample)]
 
     store = load_store()
-    stats = merge(store, incoming, args.today)
-    stats["closed"] = close_missing(store, {r["id"] for r in incoming}, live, args.today) if args.sample >= 1 else 0
+    seen: set[str] = set()
+    stats = merge(store, incoming, args.today, seen)
+    stats["closed"] = close_missing(store, seen, live, args.today) if args.sample >= 1 else 0
     save_store(store)
     print(json.dumps({**stats, "total": len(store), "row_counts": counts}))
     return 0
