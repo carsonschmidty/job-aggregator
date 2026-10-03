@@ -69,6 +69,40 @@
         "speedyapply-2027-swe": 2652,
         "speedyapply-2027-ai": 2029
       }
+    },
+    {
+      "date": "2026-10-02",
+      "seed": "171dd7ca",
+      "budget": 0,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run recorded for this date; backfilled on 2026-10-03",
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1982,
+        "simplify-new-grad-positions": 486,
+        "speedyapply-2027-swe": 2652,
+        "speedyapply-2027-ai": 2029
+      }
+    },
+    {
+      "date": "2026-10-03",
+      "seed": "2df15e9a",
+      "budget": 6,
+      "units": [
+        "fix-fuzzy-close",
+        "ingest-2026-10-03"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1899,
+        "simplify-new-grad-positions": 498,
+        "speedyapply-2027-swe": 2692,
+        "speedyapply-2027-ai": 2082,
+        "applyguy-2027-internships": 726
+      }
     }
   ]
 }
