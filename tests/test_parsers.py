@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.parsers import parse_applyguy, parse_simplify, parse_speedyapply
+from scripts.parsers import _title_category, parse_applyguy, parse_simplify, parse_speedyapply
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -30,3 +30,17 @@ def test_applyguy_original_link_and_category():
     assert rows[0]["company"] == "Allegion" and rows[0]["category"] == "swe"
     assert rows[0]["apply_url"].startswith("https://allegion.wd5.myworkdayjobs.com/")
     assert rows[0]["job_type"] == "internship" and rows[0]["salary"] is None
+    assert rows[1]["category"] == "hardware"  # "Embedded Design Engineering Intern – Firmware"
+
+
+def test_title_category_prefers_specific_family_over_generic_engineering_words():
+    cases = {
+        "Firmware Developer - Internship": "hardware",
+        "Intern - Data Engineer AI (Databricks, SQL, Python)": "ai_ml_data",
+        "2027 Summer Intern - AI/ML Engineer, Simulation": "ai_ml_data",
+        "Cloud DevOps Internship": "swe",
+        "Site Reliability Engineer Intern — Summer 2027": "swe",
+        "Product Strategy Intern - Summer 2027": "pm",
+        "Health Insurance Product Intern": None,
+    }
+    assert {t: _title_category(t) for t in cases} == cases

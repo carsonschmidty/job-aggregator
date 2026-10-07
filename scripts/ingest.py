@@ -105,6 +105,8 @@ def merge(store: list[dict], incoming: list[dict], today: str, seen: set[str] | 
         if rec["sources"][0]["source"] not in known:
             hit["sources"].append(rec["sources"][0])
         hit["last_seen"], hit["status"] = today, "open"
+        if hit.get("category") is None and rec.get("category"):
+            hit["category"] = rec["category"]  # fill gaps left by an older parser; never overwrite
         stats["updated"] += 1
     return stats
 
