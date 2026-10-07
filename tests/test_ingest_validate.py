@@ -24,6 +24,16 @@ def test_merge_rejects_exact_and_fuzzy_duplicates_and_appends_sources():
     assert {s["source"] for s in store[0]["sources"]} == {"s1", "s2"}
 
 
+def test_merge_fills_missing_category_but_never_overwrites():
+    store = []
+    ingest.merge(store, [rec("Acme", "Firmware Intern", "https://a.com/1"), rec("Acme", "Data Intern", "https://a.com/2")], "2026-10-01")
+    store[0]["category"], store[1]["category"] = None, "ai_ml_data"
+    incoming = [rec("Acme", "Firmware Intern", "https://a.com/1"), rec("Acme", "Data Intern", "https://a.com/2")]
+    incoming[0]["category"], incoming[1]["category"] = "hardware", "swe"
+    ingest.merge(store, incoming, "2026-10-02")
+    assert [r["category"] for r in store] == ["hardware", "ai_ml_data"]
+
+
 def test_close_missing_only_touches_live_sources():
     store = []
     ingest.merge(store, [rec("A", "T1", "https://a/1"), rec("B", "T2", "https://b/1", source="dead")], "2026-10-01")
