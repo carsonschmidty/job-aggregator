@@ -24,3 +24,13 @@ def test_fuzzy_match_requires_company_type_title_and_location():
     assert not is_fuzzy_match(base, {**near, "job_type": "new_grad"})
     assert not is_fuzzy_match(base, {**near, "title": "Data Scientist Intern"})
     assert not is_fuzzy_match(base, {**near, "location": "Austin, TX"})
+
+
+def test_fuzzy_match_is_symmetric():
+    # SequenceMatcher.ratio() scores this pair 0.907 one way and 0.889 the other.
+    a = {"company": "C-Serv", "title": "F5 BIG-IP - F5 Distributed Cloud - XC Consultant - Indonesia",
+         "location": "", "job_type": "new_grad"}
+    b = {**a, "title": "F5 BIG-IP - F5 Distributed Cloud - XC Consultant - Singapore",
+         "location": "Singapore, Singapore"}
+    assert is_fuzzy_match(a, b) == is_fuzzy_match(b, a)
+    assert not is_fuzzy_match(a, b)

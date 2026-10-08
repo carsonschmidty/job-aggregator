@@ -55,7 +55,10 @@ def is_fuzzy_match(a: dict, b: dict, threshold: float = 0.9) -> bool:
     """Same company + job type, near-identical title, overlapping location."""
     if normalize(a["company"]) != normalize(b["company"]) or a["job_type"] != b["job_type"]:
         return False
-    if SequenceMatcher(None, normalize(a["title"]), normalize(b["title"])).ratio() < threshold:
+    ta, tb = normalize(a["title"]), normalize(b["title"])
+    # SequenceMatcher.ratio() is not symmetric; require the threshold in both
+    # directions so ingest (incoming, existing) and validate (existing, incoming) agree.
+    if min(SequenceMatcher(None, ta, tb).ratio(), SequenceMatcher(None, tb, ta).ratio()) < threshold:
         return False
     la, lb = _loc_tokens(a["location"]), _loc_tokens(b["location"])
     return not la or not lb or bool(la & lb)
