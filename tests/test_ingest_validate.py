@@ -75,3 +75,8 @@ def test_validate_flags_duplicates_and_bad_schema(tmp_path):
 
 def test_committed_store_is_valid():
     assert validate.validate() == []
+
+
+def test_to_record_normalizes_location():
+    assert rec("Acme", "SWE Intern", "https://a.com/1", location="SF; Remote in USA")["location"] == "San Francisco, CA; Remote - USA"
+

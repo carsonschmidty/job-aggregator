@@ -18,7 +18,7 @@ from pathlib import Path
 
 import yaml
 
-from .common import ROOT, SCHEMA_VERSION, is_fuzzy_match, load_store, make_id, normalize, save_store
+from .common import ROOT, SCHEMA_VERSION, is_fuzzy_match, load_store, make_id, normalize, normalize_location, save_store
 from .parsers import parse_applyguy, parse_simplify, parse_speedyapply
 
 UA = "job-aggregator/0.1 (+https://github.com; read-only public README fetch)"
@@ -68,7 +68,8 @@ def to_record(raw: dict, today: str) -> dict:
     src = raw.pop("_source")
     return {
         "id": make_id(raw["company"], raw["title"], raw["apply_url"]),
-        **raw, "sources": [src], "first_seen": today, "last_seen": today,
+        **raw, "location": normalize_location(raw["location"]),
+        "sources": [src], "first_seen": today, "last_seen": today,
         "status": "open", "schema_version": SCHEMA_VERSION,
     }
 
