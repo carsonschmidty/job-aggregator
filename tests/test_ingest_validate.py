@@ -100,10 +100,16 @@ def test_validate_rejects_unnormalized_location(tmp_path):
     assert any("not normalized" in e for e in validate.validate(tmp_path / "jobs.jsonl"))
 
 
-def test_merge_refreshes_location_only_from_the_primary_source():
+
+
+def test_merge_only_rewrites_location_on_an_id_hit_that_adds_separators():
     store = []
-    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="Burnaby, BC, CanadaVancouver, BC, Canada")], "2026-10-01")
-    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", source="s2", location="Vancouver, BC, Canada")], "2026-10-02")
-    assert store[0]["location"] == "Burnaby, BC, CanadaVancouver, BC, Canada"
-    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="Burnaby, BC, Canada; Vancouver, BC, Canada")], "2026-10-03")
-    assert store[0]["location"] == "Burnaby, BC, Canada; Vancouver, BC, Canada"
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="SFNYC")], "2026-10-01")
+    # a fuzzy hit is a different listing and never rewrites location
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/2", location="Austin, TX; SFNYC")], "2026-10-02")
+    assert store[0]["location"] == "SFNYC"
+    # the same id moving to another single place keeps the stored value
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="Toronto, ON, Canada")], "2026-10-03")
+    assert store[0]["location"] == "SFNYC"
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="SF; NYC")], "2026-10-04")
+    assert store[0]["location"] == "San Francisco, CA; New York City, NY"

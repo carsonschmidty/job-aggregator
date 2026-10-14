@@ -106,12 +106,22 @@ def merge(store: list[dict], incoming: list[dict], today: str, seen: set[str] | 
         if rec["sources"][0]["source"] not in known:
             hit["sources"].append(rec["sources"][0])
         hit["last_seen"], hit["status"] = today, "open"
-        if rec["sources"][0]["source"] == hit["sources"][0]["source"]:
-            hit["location"] = rec["location"]  # the primary source owns location, so parser fixes propagate
+        if rec["id"] == hit["id"] and _gains_separators(hit["location"], rec["location"]):
+            hit["location"] = rec["location"]
         if hit.get("category") is None and rec.get("category"):
             hit["category"] = rec["category"]  # fill gaps left by an older parser; never overwrite
         stats["updated"] += 1
     return stats
+
+
+def _gains_separators(stored: str, incoming: str) -> bool:
+    """Only an exact-id hit may rewrite location, and only to split a value that has no `; `.
+
+    This is how a parser fix for run-together cells reaches existing records. A fuzzy hit is a
+    different listing and never rewrites location, and a single-place value never gets replaced
+    by another single place, so a source moving a role does not reshuffle fuzzy overlaps.
+    """
+    return ";" not in stored and ";" in incoming
 
 
 def close_missing(store: list[dict], seen_ids: set[str], live_sources: set[str], today: str) -> int:
