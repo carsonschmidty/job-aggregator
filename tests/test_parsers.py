@@ -14,6 +14,7 @@ def test_simplify_rows_categories_and_continuations():
     assert rows[0]["sponsorship"] == "no_sponsorship" and rows[0]["citizenship"] is None
     assert rows[1]["citizenship"] == "us_citizenship_required"
     assert rows[1]["location"] == "Tempe, AZ; Dallas, TX"
+    assert rows[2]["location"] == "Burnaby, BC, Canada; Vancouver, BC, Canada"  # new-grad README uses </br>
 
 
 def test_speedyapply_rows_salary_and_linkless_rows():

@@ -15,7 +15,7 @@ _CATEGORY = {
 
 def _text(fragment: str) -> str:
     fragment = re.sub(r"<summary>.*?</summary>", "", fragment, flags=re.S)
-    fragment = re.sub(r"<br\s*/?>", "; ", fragment)
+    fragment = re.sub(r"</?br\s*/?>", "; ", fragment)
     return html.unescape(_TAG.sub("", fragment)).strip()
 
 

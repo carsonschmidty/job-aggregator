@@ -98,3 +98,12 @@ def test_validate_rejects_unnormalized_location(tmp_path):
     r["location"] = "NYC"
     save_store([r], tmp_path / "jobs.jsonl")
     assert any("not normalized" in e for e in validate.validate(tmp_path / "jobs.jsonl"))
+
+
+def test_merge_refreshes_location_only_from_the_primary_source():
+    store = []
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="Burnaby, BC, CanadaVancouver, BC, Canada")], "2026-10-01")
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", source="s2", location="Vancouver, BC, Canada")], "2026-10-02")
+    assert store[0]["location"] == "Burnaby, BC, CanadaVancouver, BC, Canada"
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="Burnaby, BC, Canada; Vancouver, BC, Canada")], "2026-10-03")
+    assert store[0]["location"] == "Burnaby, BC, Canada; Vancouver, BC, Canada"
