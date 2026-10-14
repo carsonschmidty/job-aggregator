@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from .common import REQUIRED_FIELDS, SCHEMA_VERSION, STATUSES, STORE, is_fuzzy_match, make_id, normalize
+from .common import REQUIRED_FIELDS, SCHEMA_VERSION, STATUSES, STORE, is_fuzzy_match, make_id, normalize, normalize_location
 
 
 def validate(path: Path = STORE) -> list[str]:
@@ -34,6 +34,8 @@ def validate(path: Path = STORE) -> list[str]:
             errors.append(f"line {n}: apply_url not http(s)")
         if rec["id"] != make_id(rec["company"], rec["title"], rec["apply_url"]):
             errors.append(f"line {n}: id does not match content hash")
+        if rec["location"] != normalize_location(rec["location"]):
+            errors.append(f"line {n}: location {rec['location']!r} is not normalized")
         if rec["id"] in seen:
             errors.append(f"line {n}: duplicate id {rec['id']} (first at line {seen[rec['id']]})")
         seen[rec["id"]] = n

@@ -23,6 +23,21 @@ _LEGAL_SUFFIX = re.compile(r"\b(inc|llc|ltd|corp|corporation|co|company|plc|gmbh
 _TRACKING = re.compile(r"^(utm_.*|ref|source|gh_src|embed|fbclid|gclid|lever-source.*|src)$", re.I)
 _EMOJI_AND_PUNCT = re.compile(r"[^a-z0-9 ]+")
 
+# Short forms used by the speedyapply tables, mapped to the `City, ST` form SimplifyJobs
+# publishes. Keys are compared after lowercasing and whitespace collapse, per `;` segment.
+_LOCATION_ALIAS = {
+    "nyc": "New York City, NY", "nyc, ny": "New York City, NY", "new york": "New York City, NY",
+    "new york, ny": "New York City, NY", "new york city": "New York City, NY",
+    "sf": "San Francisco, CA", "san francisco": "San Francisco, CA",
+    "la": "Los Angeles, CA", "los angeles": "Los Angeles, CA",
+    "remote - usa": "Remote - USA", "remote in usa": "Remote - USA", "remote, u.s.": "Remote - USA",
+    "remote - us": "Remote - USA", "remote usa": "Remote - USA", "remote (usa)": "Remote - USA",
+}
+_REMOTE_IN = re.compile(r"^remote in (.+)$", re.I)
+# Tokens too generic to count as a location overlap: "city" (New York City vs Salt Lake
+# City) and two-letter state or country codes (Irvine, CA vs Los Angeles, CA).
+_LOCATION_STOP = {"city"}
+
 
 def normalize(text: str) -> str:
     """Lowercase, strip emoji/punctuation, collapse whitespace, drop legal suffixes."""
@@ -30,6 +45,23 @@ def normalize(text: str) -> str:
     t = _EMOJI_AND_PUNCT.sub(" ", t)
     t = re.sub(r"\s+", " ", t).strip()
     return _LEGAL_SUFFIX.sub("", t).strip()
+
+
+def normalize_location(location: str) -> str:
+    """Collapse city and remote aliases per `;` segment; drop empty and repeated segments."""
+    out: list[str] = []
+    for segment in (location or "").split(";"):
+        seg = re.sub(r"\s+", " ", segment).strip()
+        if not seg:
+            continue
+        alias = _LOCATION_ALIAS.get(seg.lower())
+        if alias:
+            seg = alias
+        elif (m := _REMOTE_IN.match(seg)):
+            seg = f"Remote - {m.group(1)}"
+        if seg not in out:
+            out.append(seg)
+    return "; ".join(out)
 
 
 def canonical_url(url: str) -> str:
@@ -48,7 +80,7 @@ def make_id(company: str, title: str, apply_url: str) -> str:
 
 
 def _loc_tokens(location: str) -> set[str]:
-    return {t for t in normalize(location).split() if len(t) > 1}
+    return {t for t in normalize(normalize_location(location)).split() if len(t) > 2 and t not in _LOCATION_STOP}
 
 
 def is_fuzzy_match(a: dict, b: dict, threshold: float = 0.9) -> bool:

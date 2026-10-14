@@ -1,4 +1,4 @@
-from scripts.common import canonical_url, is_fuzzy_match, make_id, normalize
+from scripts.common import canonical_url, is_fuzzy_match, make_id, normalize, normalize_location
 
 
 def test_normalize_strips_emoji_punctuation_and_legal_suffix():
@@ -34,3 +34,30 @@ def test_fuzzy_match_is_symmetric():
          "location": "Singapore, Singapore"}
     assert is_fuzzy_match(a, b) == is_fuzzy_match(b, a)
     assert not is_fuzzy_match(a, b)
+
+
+def test_normalize_location_single_city_aliases():
+    assert normalize_location("NYC") == "New York City, NY"
+    assert normalize_location("SF") == "San Francisco, CA"
+    assert normalize_location(" la ") == "Los Angeles, CA"
+    assert normalize_location("Austin, TX") == "Austin, TX"
+
+
+def test_normalize_location_multi_city_keeps_every_city_and_drops_repeats():
+    assert normalize_location("Seattle, WA; SF; NYC") == "Seattle, WA; San Francisco, CA; New York City, NY"
+    assert normalize_location("NYC; New York City, NY; ") == "New York City, NY"
+
+
+def test_normalize_location_remote_variants_collapse():
+    for raw in ("Remote - USA", "Remote in USA", "Remote, U.S."):
+        assert normalize_location(raw) == "Remote - USA"
+    assert normalize_location("Remote in Canada") == "Remote - Canada"
+    assert normalize_location("Remote") == "Remote"
+
+
+def test_fuzzy_match_sees_cross_source_location_overlap():
+    base = {"company": "Acme", "title": "Software Engineer Intern", "location": "NYC", "job_type": "internship"}
+    assert is_fuzzy_match(base, {**base, "location": "New York City, NY"})
+    # "city" and two-letter state codes alone are not an overlap
+    assert not is_fuzzy_match(base, {**base, "location": "Salt Lake City, UT"})
+    assert not is_fuzzy_match({**base, "location": "LA"}, {**base, "location": "Irvine, CA"})
