@@ -80,3 +80,21 @@ def test_committed_store_is_valid():
 def test_to_record_normalizes_location():
     assert rec("Acme", "SWE Intern", "https://a.com/1", location="SF; Remote in USA")["location"] == "San Francisco, CA; Remote - USA"
 
+
+def test_dedupe_consolidates_pairs_into_the_record_seen_first():
+    from scripts import dedupe
+    old = rec("Acme", "SWE Intern", "https://a.com/1", location="NYC")
+    new = rec("Acme", "SWE Intern", "https://a.com/2", source="s2", location="New York City, NY")
+    old["first_seen"], old["status"], new["last_seen"] = "2026-09-28", "closed", "2026-10-14"
+    survivors, summary = dedupe.consolidate([new, old])
+    assert [r["id"] for r in survivors] == [old["id"]]
+    assert summary["merged"] == [{"removed": new["id"], "into": old["id"], "company": "Acme", "title": "SWE Intern"}]
+    assert survivors[0]["status"] == "open" and survivors[0]["last_seen"] == "2026-10-14"
+    assert {s["source"] for s in survivors[0]["sources"]} == {"s1", "s2"}
+
+
+def test_validate_rejects_unnormalized_location(tmp_path):
+    r = rec("Acme", "SWE Intern", "https://a.com/1")
+    r["location"] = "NYC"
+    save_store([r], tmp_path / "jobs.jsonl")
+    assert any("not normalized" in e for e in validate.validate(tmp_path / "jobs.jsonl"))

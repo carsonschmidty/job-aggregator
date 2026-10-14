@@ -18,12 +18,13 @@ All listings are attributed to their origin in each record's `sources[]`. The re
 
 ## Consumer contract (schema_version 1)
 
-Records are updated in place by `id`. Records are never deleted; a listing that disappears from every source gets `status: "closed"`.
+Records are updated in place by `id`. A listing that disappears from every source gets `status: "closed"`; records are never deleted by ingest. The one exception is a dedupe consolidation (`python -m scripts.dedupe`), run only when a matcher change reveals that two existing records are the same listing: the newer id is removed and its `sources[]` fold into the older record. Every consolidation lists the removed ids in its PR and in `CHANGELOG.md`.
 
 | Field | Type | Notes |
 |---|---|---|
 | `id` | string | 16 hex chars of sha256(normalized company + title + canonical apply URL) |
-| `company`, `title`, `location` | string | As published; multi-location rows are joined with `; ` |
+| `company`, `title` | string | As published |
+| `location` | string | Per `;`-separated segment, short forms are mapped to the `City, ST` spelling (`NYC`, `SF`, `LA`) and remote variants to `Remote - <region>`; multi-location rows are joined with `; ` |
 | `apply_url` | string | Direct application link, tracking params intact |
 | `url` | string | Detail page if the source offers one, else `apply_url` |
 | `sources` | array | `[{source, source_url}]`, one entry per feeder listing it |
