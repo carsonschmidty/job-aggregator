@@ -37,7 +37,7 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 | `salary` | string or null | Verbatim from source when present |
 | `schema_version` | int | Bumped on breaking changes |
 
-Duplicates are prevented by an exact id check plus a fuzzy match (same company and job type, title similarity at least 0.9, overlapping location). `python -m scripts.validate` fails on either.
+Duplicates are prevented by an exact id check plus a fuzzy match (same company and job type, title similarity at least 0.9, same language or platform names in the title, overlapping location). `python -m scripts.validate` fails on either.
 
 ## Usage
 

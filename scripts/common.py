@@ -38,6 +38,16 @@ _REMOTE_IN = re.compile(r"^remote in (.+)$", re.I)
 # City) and two-letter state or country codes (Irvine, CA vs Los Angeles, CA).
 _LOCATION_STOP = {"city"}
 
+# Language and platform names that make two otherwise near-identical titles different roles
+# (Jump Trading lists "Campus C++ Software Engineer - Intern" and "Campus Python Software
+# Engineer - Intern" with separate apply links; SequenceMatcher scores them 0.901). Symbols
+# are rewritten before `normalize` strips punctuation, so "C++" and "C" stay distinct.
+_TECH_SPELLINGS = {"c++": "cpp", "c#": "csharp", ".net": "dotnet", "node.js": "nodejs", "objective-c": "objectivec"}
+_TECH_TOKENS = {
+    "c", "cpp", "csharp", "dotnet", "python", "java", "javascript", "typescript", "nodejs", "go", "golang",
+    "rust", "kotlin", "swift", "scala", "ruby", "php", "objectivec", "ios", "android", "react", "angular",
+}
+
 
 def normalize(text: str) -> str:
     """Lowercase, strip emoji/punctuation, collapse whitespace, drop legal suffixes."""
@@ -79,13 +89,22 @@ def make_id(company: str, title: str, apply_url: str) -> str:
     return hashlib.sha256(key.encode()).hexdigest()[:16]
 
 
+def _tech_tokens(title: str) -> set[str]:
+    t = (title or "").lower()
+    for spelling, token in _TECH_SPELLINGS.items():
+        t = t.replace(spelling, f" {token} ")
+    return set(normalize(t).split()) & _TECH_TOKENS
+
+
 def _loc_tokens(location: str) -> set[str]:
     return {t for t in normalize(normalize_location(location)).split() if len(t) > 2 and t not in _LOCATION_STOP}
 
 
 def is_fuzzy_match(a: dict, b: dict, threshold: float = 0.9) -> bool:
-    """Same company + job type, near-identical title, overlapping location."""
+    """Same company + job type, near-identical title, same language tokens, overlapping location."""
     if normalize(a["company"]) != normalize(b["company"]) or a["job_type"] != b["job_type"]:
+        return False
+    if _tech_tokens(a["title"]) != _tech_tokens(b["title"]):
         return False
     ta, tb = normalize(a["title"]), normalize(b["title"])
     # SequenceMatcher.ratio() is not symmetric; require the threshold in both

@@ -36,6 +36,27 @@ def test_fuzzy_match_is_symmetric():
     assert not is_fuzzy_match(a, b)
 
 
+def test_fuzzy_match_keeps_language_variants_apart():
+    # Ratio is 0.901, above the threshold, but these are two roles with two apply links (#40).
+    a = {"company": "Jump Trading", "title": "Campus C++ Software Engineer - Intern",
+         "location": "Hong Kong +1", "job_type": "internship"}
+    b = {**a, "title": "Campus Python Software Engineer - Intern"}
+    assert not is_fuzzy_match(a, b)
+    assert not is_fuzzy_match(a, {**a, "title": "Campus C Software Engineer - Intern"})
+    assert is_fuzzy_match(a, {**a, "title": "Campus C++ Software Engineer Intern"})
+
+
+def test_fuzzy_match_still_accepts_true_variants():
+    base = {"company": "Acme", "location": "Austin, TX", "job_type": "new_grad"}
+    pairs = [
+        ("Software Engineer Intern", "Software Engineering Intern"),
+        ("Data Engineer 1", "Data Engineer I"),
+        ("Software Engineer \u2013 University Graduate", "Software Engineer - University Graduate - US"),
+    ]
+    for x, y in pairs:
+        assert is_fuzzy_match({**base, "title": x}, {**base, "title": y}), (x, y)
+
+
 def test_normalize_location_single_city_aliases():
     assert normalize_location("NYC") == "New York City, NY"
     assert normalize_location("SF") == "San Francisco, CA"
