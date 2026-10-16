@@ -32,6 +32,9 @@ _LOCATION_ALIAS = {
     "la": "Los Angeles, CA", "los angeles": "Los Angeles, CA",
     "remote - usa": "Remote - USA", "remote in usa": "Remote - USA", "remote, u.s.": "Remote - USA",
     "remote - us": "Remote - USA", "remote usa": "Remote - USA", "remote (usa)": "Remote - USA",
+    # speedyapply country spellings for cities SimplifyJobs writes with a region code or bare.
+    "london, united kingdom": "London, UK", "singapore, singapore": "Singapore",
+    "toronto, canada": "Toronto, ON, Canada", "vancouver, canada": "Vancouver, BC, Canada",
 }
 _REMOTE_IN = re.compile(r"^remote in (.+)$", re.I)
 # Tokens too generic to count as a location overlap: "city" (New York City vs Salt Lake
