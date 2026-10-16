@@ -8,3 +8,4 @@
 - Dedupe: `scripts.dedupe` consolidates duplicates that a matcher change surfaces; first run on 2026-10-14 folded 33 cross-source pairs into their older record (removed ids listed in #38).
 - Fix: SimplifyJobs cells joined with `</br>` now split into `; ` segments; an exact-id hit may add separators to a stored location so the fix reaches existing records. Regeneration consolidated 8 pairs that the repaired locations revealed (ids in #39).
 - Dedupe: fuzzy match no longer pairs titles that differ only by a language or platform name (C++ vs Python, iOS vs Android); each keeps its own apply link (#40).
+- Normalize: `London, United Kingdom`, `Singapore, Singapore`, `Toronto, Canada` and `Vancouver, Canada` map to the SimplifyJobs spelling (#46).

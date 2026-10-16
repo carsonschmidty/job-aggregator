@@ -69,6 +69,16 @@ def test_normalize_location_multi_city_keeps_every_city_and_drops_repeats():
     assert normalize_location("NYC; New York City, NY; ") == "New York City, NY"
 
 
+def test_normalize_location_international_city_aliases():
+    assert normalize_location("London, United Kingdom") == "London, UK"
+    assert normalize_location("Singapore, Singapore") == "Singapore"
+    assert normalize_location("Toronto, Canada") == "Toronto, ON, Canada"
+    assert normalize_location("Vancouver, Canada") == "Vancouver, BC, Canada"
+    # The source's truncated form keeps its `+N` marker and is left alone here.
+    assert normalize_location("London, United Kingdom +1") == "London, United Kingdom +1"
+    assert normalize_location("Londonderry, UK") == "Londonderry, UK"
+
+
 def test_normalize_location_remote_variants_collapse():
     for raw in ("Remote - USA", "Remote in USA", "Remote, U.S."):
         assert normalize_location(raw) == "Remote - USA"
