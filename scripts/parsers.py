@@ -89,7 +89,8 @@ _MD_LINK = re.compile(r"\]\((https?://[^)\s]+)\)")
 # generic engineering words that also appear in their titles ("Firmware Developer").
 _TITLE_CATEGORY = (
     ("quant", "quant"),
-    ("product manag", "pm"), ("product strateg", "pm"), ("product analyst", "pm"),
+    ("product manag", "pm"), ("product strateg", "pm"), ("product & strategy", "pm"),
+    ("product analyst", "pm"), ("product operations", "pm"),
     ("machine learning", "ai_ml_data"), ("ml engineer", "ai_ml_data"), ("ai/ml", "ai_ml_data"),
     ("ai engineer", "ai_ml_data"), ("ai developer", "ai_ml_data"),
     ("data scien", "ai_ml_data"), ("data engineer", "ai_ml_data"),
@@ -97,6 +98,7 @@ _TITLE_CATEGORY = (
     ("software", "swe"), ("developer", "swe"), ("devops", "swe"), ("site reliability", "swe"),
     ("cloud", "swe"), ("full-stack", "swe"), ("full stack", "swe"), ("front-end", "swe"),
     ("back-end", "swe"), ("backend", "swe"), ("linux engineer", "swe"),
+    ("infrastructure engineer", "swe"), ("front end engineer", "swe"),  # bare "front end" would catch retail titles
 )
 
 

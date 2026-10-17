@@ -42,6 +42,11 @@ def test_title_category_prefers_specific_family_over_generic_engineering_words()
         "Cloud DevOps Internship": "swe",
         "Site Reliability Engineer Intern — Summer 2027": "swe",
         "Product Strategy Intern - Summer 2027": "pm",
+        "2027 IT-Product & Strategy Summer Intern": "pm",
+        "Product Operations Engineer Intern": "pm",
+        "Infrastructure Engineer Intern": "swe",
+        "Intern - UX/UI Front End Engineer - Starting Spring 2027": "swe",
+        "Assistant Front End Manager Trainee": None,
         "Health Insurance Product Intern": None,
     }
     assert {t: _title_category(t) for t in cases} == cases
