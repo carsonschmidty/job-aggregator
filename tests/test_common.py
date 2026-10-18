@@ -79,6 +79,15 @@ def test_normalize_location_international_city_aliases():
     assert normalize_location("Londonderry, UK") == "Londonderry, UK"
 
 
+def test_normalize_location_us_country_and_state_aliases():
+    assert normalize_location("USA") == "United States"
+    assert normalize_location("Iowa, USA") == "Iowa"
+    assert normalize_location("North Carolina, USA") == "North Carolina"
+    assert normalize_location("Remote - USA") == "Remote - USA"
+    assert normalize_location("Austin, TX") == "Austin, TX"
+    assert normalize_location("Ontario, USA") == "Ontario, USA"
+
+
 def test_normalize_location_remote_variants_collapse():
     for raw in ("Remote - USA", "Remote in USA", "Remote, U.S."):
         assert normalize_location(raw) == "Remote - USA"

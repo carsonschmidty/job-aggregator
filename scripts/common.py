@@ -35,8 +35,21 @@ _LOCATION_ALIAS = {
     # speedyapply country spellings for cities SimplifyJobs writes with a region code or bare.
     "london, united kingdom": "London, UK", "singapore, singapore": "Singapore",
     "toronto, canada": "Toronto, ON, Canada", "vancouver, canada": "Vancouver, BC, Canada",
+    "usa": "United States",
 }
 _REMOTE_IN = re.compile(r"^remote in (.+)$", re.I)
+# speedyapply writes country-level and state-level US cells with a `USA` suffix ("USA",
+# "Iowa, USA"); SimplifyJobs writes "United States" and the bare state name.
+_STATE_USA = re.compile(r"^(.+), usa$")
+_US_STATES = {s.lower(): s for s in (
+    "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware",
+    "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
+    "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", "Minnesota",
+    "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+    "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon",
+    "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah",
+    "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+)}
 # Tokens too generic to count as a location overlap: "city" (New York City vs Salt Lake
 # City) and two-letter state or country codes (Irvine, CA vs Los Angeles, CA).
 _LOCATION_STOP = {"city"}
@@ -61,7 +74,7 @@ def normalize(text: str) -> str:
 
 
 def normalize_location(location: str) -> str:
-    """Collapse city and remote aliases per `;` segment; drop empty and repeated segments."""
+    """Collapse city, country, state and remote aliases per `;` segment; drop empty and repeated segments."""
     out: list[str] = []
     for segment in (location or "").split(";"):
         seg = re.sub(r"\s+", " ", segment).strip()
@@ -72,6 +85,8 @@ def normalize_location(location: str) -> str:
             seg = alias
         elif (m := _REMOTE_IN.match(seg)):
             seg = f"Remote - {m.group(1)}"
+        elif (m := _STATE_USA.match(seg.lower())) and m.group(1) in _US_STATES:
+            seg = _US_STATES[m.group(1)]
         if seg not in out:
             out.append(seg)
     return "; ".join(out)

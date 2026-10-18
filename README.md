@@ -24,7 +24,7 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 |---|---|---|
 | `id` | string | 16 hex chars of sha256(normalized company + title + canonical apply URL) |
 | `company`, `title` | string | As published |
-| `location` | string | Per `;`-separated segment, short forms are mapped to the `City, ST` spelling (`NYC`, `SF`, `LA`), speedyapply country spellings to the SimplifyJobs form (`London, UK`, `Singapore`, `Toronto, ON, Canada`, `Vancouver, BC, Canada`) and remote variants to `Remote - <region>`; multi-location rows are joined with `; ` |
+| `location` | string | Per `;`-separated segment, short forms are mapped to the `City, ST` spelling (`NYC`, `SF`, `LA`), speedyapply country spellings to the SimplifyJobs form (`London, UK`, `Singapore`, `Toronto, ON, Canada`, `Vancouver, BC, Canada`, `United States`, bare state names such as `Iowa`) and remote variants to `Remote - <region>`; multi-location rows are joined with `; ` |
 | `apply_url` | string | Direct application link, tracking params intact |
 | `url` | string | Detail page if the source offers one, else `apply_url` |
 | `sources` | array | `[{source, source_url}]`, one entry per feeder listing it |

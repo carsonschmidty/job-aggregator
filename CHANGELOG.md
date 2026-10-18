@@ -9,3 +9,4 @@
 - Fix: SimplifyJobs cells joined with `</br>` now split into `; ` segments; an exact-id hit may add separators to a stored location so the fix reaches existing records. Regeneration consolidated 8 pairs that the repaired locations revealed (ids in #39).
 - Dedupe: fuzzy match no longer pairs titles that differ only by a language or platform name (C++ vs Python, iOS vs Android); each keeps its own apply link (#40).
 - Normalize: `London, United Kingdom`, `Singapore, Singapore`, `Toronto, Canada` and `Vancouver, Canada` map to the SimplifyJobs spelling (#46).
+- Normalize: `USA` maps to `United States` and `<State>, USA` to the bare state name, the SimplifyJobs spelling; 71 records relocated, 0 merged (#54).
