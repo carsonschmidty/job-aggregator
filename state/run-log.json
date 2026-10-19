@@ -351,6 +351,24 @@
         "speedyapply-2027-ai": 2637,
         "applyguy-2027-internships": 504
       }
+    },
+    {
+      "date": "2026-10-19",
+      "seed": "53e618bc",
+      "budget": 1,
+      "units": [
+        "ingest-2026-10-19"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1804,
+        "simplify-new-grad-positions": 537,
+        "speedyapply-2027-swe": 3466,
+        "speedyapply-2027-ai": 2637,
+        "applyguy-2027-internships": 489
+      }
     }
   ]
 }
