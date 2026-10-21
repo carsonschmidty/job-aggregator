@@ -1,402 +1,402 @@
 {
- "runs": [
-  {
-   "date": "2026-09-28",
-   "seed": "bootstrap",
-   "budget": 2,
-   "units": [
-    "bootstrap",
-    "initial-import-90pct"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 2019,
-    "simplify-new-grad-positions": 474,
-    "speedyapply-2027-swe": 2677,
-    "speedyapply-2027-ai": 2026
-   }
-  },
-  {
-   "date": "2026-09-29",
-   "seed": "927672ba",
-   "budget": 6,
-   "units": [
-    "ingest-2026-09-29"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1874,
-    "simplify-new-grad-positions": 473,
-    "speedyapply-2027-swe": 2677,
-    "speedyapply-2027-ai": 2026
-   }
-  },
-  {
-   "date": "2026-09-30",
-   "seed": "ab4be447",
-   "budget": 6,
-   "units": [
-    "ingest-2026-09-30"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1989,
-    "simplify-new-grad-positions": 475,
-    "speedyapply-2027-swe": 2663,
-    "speedyapply-2027-ai": 2029
-   }
-  },
-  {
-   "date": "2026-10-01",
-   "seed": "1cbeb6c9",
-   "budget": 2,
-   "units": [
-    "ingest-2026-10-01",
-    "source-review-2026-10"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1982,
-    "simplify-new-grad-positions": 486,
-    "speedyapply-2027-swe": 2652,
-    "speedyapply-2027-ai": 2029
-   }
-  },
-  {
-   "date": "2026-10-02",
-   "seed": "171dd7ca",
-   "budget": 0,
-   "units": [],
-   "skipped": true,
-   "skip_reason": "no run recorded for this date; backfilled on 2026-10-03",
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1982,
-    "simplify-new-grad-positions": 486,
-    "speedyapply-2027-swe": 2652,
-    "speedyapply-2027-ai": 2029
-   }
-  },
-  {
-   "date": "2026-10-03",
-   "seed": "2df15e9a",
-   "budget": 6,
-   "units": [
-    "fix-fuzzy-close",
-    "ingest-2026-10-03"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1899,
-    "simplify-new-grad-positions": 498,
-    "speedyapply-2027-swe": 2692,
-    "speedyapply-2027-ai": 2082,
-    "applyguy-2027-internships": 726
-   }
-  },
-  {
-   "date": "2026-10-04",
-   "seed": "b04d0a8a",
-   "budget": 3,
-   "units": [
-    "ingest-2026-10-04"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1804,
-    "simplify-new-grad-positions": 511,
-    "speedyapply-2027-swe": 2713,
-    "speedyapply-2027-ai": 2089,
-    "applyguy-2027-internships": 697
-   }
-  },
-  {
-   "date": "2026-10-05",
-   "seed": "d18e2547",
-   "budget": 4,
-   "units": [
-    "ingest-2026-10-05"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1807,
-    "simplify-new-grad-positions": 510,
-    "speedyapply-2027-swe": 2717,
-    "speedyapply-2027-ai": 2090,
-    "applyguy-2027-internships": 682
-   }
-  },
-  {
-   "date": "2026-10-06",
-   "seed": "fb654677",
-   "budget": 2,
-   "units": [
-    "ingest-2026-10-06"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1853,
-    "simplify-new-grad-positions": 539,
-    "speedyapply-2027-swe": 2703,
-    "speedyapply-2027-ai": 2070,
-    "applyguy-2027-internships": 702
-   }
-  },
-  {
-   "date": "2026-10-07",
-   "seed": "772b1407",
-   "budget": 4,
-   "units": [
-    "ingest-2026-10-07",
-    "applyguy-category-backfill",
-    "backlog-location-aliases"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1868,
-    "simplify-new-grad-positions": 530,
-    "speedyapply-2027-swe": 2720,
-    "speedyapply-2027-ai": 2072,
-    "applyguy-2027-internships": 722
-   }
-  },
-  {
-   "date": "2026-10-08",
-   "seed": "16e71977",
-   "budget": 2,
-   "units": [
-    "fix-fuzzy-symmetry",
-    "ingest-2026-10-08"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1894,
-    "simplify-new-grad-positions": 532,
-    "speedyapply-2027-swe": 2746,
-    "speedyapply-2027-ai": 2084,
-    "applyguy-2027-internships": 710
-   }
-  },
-  {
-   "date": "2026-10-09",
-   "seed": null,
-   "budget": null,
-   "units": [],
-   "skipped": true,
-   "skip_reason": "no run completed; backfilled on 2026-10-13",
-   "status": "complete",
-   "row_counts": null
-  },
-  {
-   "date": "2026-10-10",
-   "seed": null,
-   "budget": null,
-   "units": [],
-   "skipped": true,
-   "skip_reason": "no run completed; backfilled on 2026-10-13",
-   "status": "complete",
-   "row_counts": null
-  },
-  {
-   "date": "2026-10-11",
-   "seed": null,
-   "budget": null,
-   "units": [],
-   "skipped": true,
-   "skip_reason": "no run completed; backfilled on 2026-10-13",
-   "status": "complete",
-   "row_counts": null
-  },
-  {
-   "date": "2026-10-12",
-   "seed": null,
-   "budget": null,
-   "units": [],
-   "skipped": true,
-   "skip_reason": "no run completed; backfilled on 2026-10-13",
-   "status": "complete",
-   "row_counts": null
-  },
-  {
-   "date": "2026-10-13",
-   "seed": "8a521d06",
-   "budget": 1,
-   "units": [
-    "ingest-2026-10-13"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1890,
-    "simplify-new-grad-positions": 545,
-    "speedyapply-2027-swe": 2747,
-    "speedyapply-2027-ai": 2115,
-    "applyguy-2027-internships": 587
-   }
-  },
-  {
-   "date": "2026-10-14",
-   "seed": "c033ef5c",
-   "budget": 5,
-   "units": [
-    "ingest-2026-10-14",
-    "location-aliases-issue-27",
-    "br-parser-fix-issue-37"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1883,
-    "simplify-new-grad-positions": 546,
-    "speedyapply-2027-swe": 3085,
-    "speedyapply-2027-ai": 2333,
-    "applyguy-2027-internships": 594
-   }
-  },
-  {
-   "date": "2026-10-15",
-   "seed": "e5bcc596",
-   "budget": 3,
-   "units": [
-    "ingest-2026-10-15",
-    "language-token-fuzzy-guard-issue-40"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1901,
-    "simplify-new-grad-positions": 545,
-    "speedyapply-2027-swe": 3278,
-    "speedyapply-2027-ai": 2489,
-    "applyguy-2027-internships": 572
-   }
-  },
-  {
-   "date": "2026-10-16",
-   "seed": "dca82b0b",
-   "budget": 2,
-   "units": [
-    "ingest-2026-10-16",
-    "international-location-aliases-issue-46"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1891,
-    "simplify-new-grad-positions": 539,
-    "speedyapply-2027-swe": 3272,
-    "speedyapply-2027-ai": 2485,
-    "applyguy-2027-internships": 556
-   }
-  },
-  {
-   "date": "2026-10-17",
-   "seed": "7b0d5e77",
-   "budget": 4,
-   "units": [
-    "ingest-2026-10-17",
-    "title-categories-issue-50"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1826,
-    "simplify-new-grad-positions": 541,
-    "speedyapply-2027-swe": 3466,
-    "speedyapply-2027-ai": 2640,
-    "applyguy-2027-internships": 536
-   }
-  },
-  {
-   "date": "2026-10-18",
-   "seed": "322b3d85",
-   "budget": 3,
-   "units": [
-    "ingest-2026-10-18",
-    "us-location-aliases-issue-54",
-    "backlog-plus-n-marker-issue-55"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1821,
-    "simplify-new-grad-positions": 538,
-    "speedyapply-2027-swe": 3466,
-    "speedyapply-2027-ai": 2637,
-    "applyguy-2027-internships": 504
-   }
-  },
-  {
-   "date": "2026-10-19",
-   "seed": "53e618bc",
-   "budget": 1,
-   "units": [
-    "ingest-2026-10-19"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1804,
-    "simplify-new-grad-positions": 537,
-    "speedyapply-2027-swe": 3466,
-    "speedyapply-2027-ai": 2637,
-    "applyguy-2027-internships": 489
-   }
-  },
-  {
-   "date": "2026-10-20",
-   "seed": null,
-   "budget": null,
-   "units": [],
-   "skipped": true,
-   "skip_reason": "no run completed; backfilled on 2026-10-21",
-   "status": "complete",
-   "row_counts": null
-  },
-  {
-   "date": "2026-10-21",
-   "seed": "02718f36",
-   "budget": 1,
-   "units": [
-    "ingest-2026-10-21"
-   ],
-   "skipped": false,
-   "skip_reason": null,
-   "status": "complete",
-   "row_counts": {
-    "simplify-summer2027-internships": 1844,
-    "simplify-new-grad-positions": 536,
-    "speedyapply-2027-swe": 3227,
-    "speedyapply-2027-ai": 2462,
-    "applyguy-2027-internships": 512
-   }
-  }
- ]
+  "runs": [
+    {
+      "date": "2026-09-28",
+      "seed": "bootstrap",
+      "budget": 2,
+      "units": [
+        "bootstrap",
+        "initial-import-90pct"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 2019,
+        "simplify-new-grad-positions": 474,
+        "speedyapply-2027-swe": 2677,
+        "speedyapply-2027-ai": 2026
+      }
+    },
+    {
+      "date": "2026-09-29",
+      "seed": "927672ba",
+      "budget": 6,
+      "units": [
+        "ingest-2026-09-29"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1874,
+        "simplify-new-grad-positions": 473,
+        "speedyapply-2027-swe": 2677,
+        "speedyapply-2027-ai": 2026
+      }
+    },
+    {
+      "date": "2026-09-30",
+      "seed": "ab4be447",
+      "budget": 6,
+      "units": [
+        "ingest-2026-09-30"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1989,
+        "simplify-new-grad-positions": 475,
+        "speedyapply-2027-swe": 2663,
+        "speedyapply-2027-ai": 2029
+      }
+    },
+    {
+      "date": "2026-10-01",
+      "seed": "1cbeb6c9",
+      "budget": 2,
+      "units": [
+        "ingest-2026-10-01",
+        "source-review-2026-10"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1982,
+        "simplify-new-grad-positions": 486,
+        "speedyapply-2027-swe": 2652,
+        "speedyapply-2027-ai": 2029
+      }
+    },
+    {
+      "date": "2026-10-02",
+      "seed": "171dd7ca",
+      "budget": 0,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run recorded for this date; backfilled on 2026-10-03",
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1982,
+        "simplify-new-grad-positions": 486,
+        "speedyapply-2027-swe": 2652,
+        "speedyapply-2027-ai": 2029
+      }
+    },
+    {
+      "date": "2026-10-03",
+      "seed": "2df15e9a",
+      "budget": 6,
+      "units": [
+        "fix-fuzzy-close",
+        "ingest-2026-10-03"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1899,
+        "simplify-new-grad-positions": 498,
+        "speedyapply-2027-swe": 2692,
+        "speedyapply-2027-ai": 2082,
+        "applyguy-2027-internships": 726
+      }
+    },
+    {
+      "date": "2026-10-04",
+      "seed": "b04d0a8a",
+      "budget": 3,
+      "units": [
+        "ingest-2026-10-04"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1804,
+        "simplify-new-grad-positions": 511,
+        "speedyapply-2027-swe": 2713,
+        "speedyapply-2027-ai": 2089,
+        "applyguy-2027-internships": 697
+      }
+    },
+    {
+      "date": "2026-10-05",
+      "seed": "d18e2547",
+      "budget": 4,
+      "units": [
+        "ingest-2026-10-05"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1807,
+        "simplify-new-grad-positions": 510,
+        "speedyapply-2027-swe": 2717,
+        "speedyapply-2027-ai": 2090,
+        "applyguy-2027-internships": 682
+      }
+    },
+    {
+      "date": "2026-10-06",
+      "seed": "fb654677",
+      "budget": 2,
+      "units": [
+        "ingest-2026-10-06"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1853,
+        "simplify-new-grad-positions": 539,
+        "speedyapply-2027-swe": 2703,
+        "speedyapply-2027-ai": 2070,
+        "applyguy-2027-internships": 702
+      }
+    },
+    {
+      "date": "2026-10-07",
+      "seed": "772b1407",
+      "budget": 4,
+      "units": [
+        "ingest-2026-10-07",
+        "applyguy-category-backfill",
+        "backlog-location-aliases"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1868,
+        "simplify-new-grad-positions": 530,
+        "speedyapply-2027-swe": 2720,
+        "speedyapply-2027-ai": 2072,
+        "applyguy-2027-internships": 722
+      }
+    },
+    {
+      "date": "2026-10-08",
+      "seed": "16e71977",
+      "budget": 2,
+      "units": [
+        "fix-fuzzy-symmetry",
+        "ingest-2026-10-08"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1894,
+        "simplify-new-grad-positions": 532,
+        "speedyapply-2027-swe": 2746,
+        "speedyapply-2027-ai": 2084,
+        "applyguy-2027-internships": 710
+      }
+    },
+    {
+      "date": "2026-10-09",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-13",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-10",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-13",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-11",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-13",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-12",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-13",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-13",
+      "seed": "8a521d06",
+      "budget": 1,
+      "units": [
+        "ingest-2026-10-13"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1890,
+        "simplify-new-grad-positions": 545,
+        "speedyapply-2027-swe": 2747,
+        "speedyapply-2027-ai": 2115,
+        "applyguy-2027-internships": 587
+      }
+    },
+    {
+      "date": "2026-10-14",
+      "seed": "c033ef5c",
+      "budget": 5,
+      "units": [
+        "ingest-2026-10-14",
+        "location-aliases-issue-27",
+        "br-parser-fix-issue-37"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1883,
+        "simplify-new-grad-positions": 546,
+        "speedyapply-2027-swe": 3085,
+        "speedyapply-2027-ai": 2333,
+        "applyguy-2027-internships": 594
+      }
+    },
+    {
+      "date": "2026-10-15",
+      "seed": "e5bcc596",
+      "budget": 3,
+      "units": [
+        "ingest-2026-10-15",
+        "language-token-fuzzy-guard-issue-40"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1901,
+        "simplify-new-grad-positions": 545,
+        "speedyapply-2027-swe": 3278,
+        "speedyapply-2027-ai": 2489,
+        "applyguy-2027-internships": 572
+      }
+    },
+    {
+      "date": "2026-10-16",
+      "seed": "dca82b0b",
+      "budget": 2,
+      "units": [
+        "ingest-2026-10-16",
+        "international-location-aliases-issue-46"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1891,
+        "simplify-new-grad-positions": 539,
+        "speedyapply-2027-swe": 3272,
+        "speedyapply-2027-ai": 2485,
+        "applyguy-2027-internships": 556
+      }
+    },
+    {
+      "date": "2026-10-17",
+      "seed": "7b0d5e77",
+      "budget": 4,
+      "units": [
+        "ingest-2026-10-17",
+        "title-categories-issue-50"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1826,
+        "simplify-new-grad-positions": 541,
+        "speedyapply-2027-swe": 3466,
+        "speedyapply-2027-ai": 2640,
+        "applyguy-2027-internships": 536
+      }
+    },
+    {
+      "date": "2026-10-18",
+      "seed": "322b3d85",
+      "budget": 3,
+      "units": [
+        "ingest-2026-10-18",
+        "us-location-aliases-issue-54",
+        "backlog-plus-n-marker-issue-55"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1821,
+        "simplify-new-grad-positions": 538,
+        "speedyapply-2027-swe": 3466,
+        "speedyapply-2027-ai": 2637,
+        "applyguy-2027-internships": 504
+      }
+    },
+    {
+      "date": "2026-10-19",
+      "seed": "53e618bc",
+      "budget": 1,
+      "units": [
+        "ingest-2026-10-19"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1804,
+        "simplify-new-grad-positions": 537,
+        "speedyapply-2027-swe": 3466,
+        "speedyapply-2027-ai": 2637,
+        "applyguy-2027-internships": 489
+      }
+    },
+    {
+      "date": "2026-10-20",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-21",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-21",
+      "seed": "02718f36",
+      "budget": 1,
+      "units": [
+        "ingest-2026-10-21"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1844,
+        "simplify-new-grad-positions": 536,
+        "speedyapply-2027-swe": 3227,
+        "speedyapply-2027-ai": 2462,
+        "applyguy-2027-internships": 512
+      }
+    }
+  ]
 }
