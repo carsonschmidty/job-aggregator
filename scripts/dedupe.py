@@ -5,7 +5,8 @@ Usage:
     python -m scripts.dedupe --dry-run  # print the summary only
 
 Run this after a change to `normalize_location` or `is_fuzzy_match` makes existing records
-match each other. Ingest never creates such pairs, so this is a one-off repair, not a daily step.
+match each other. Ingest calls `consolidate` on every run as well, because an id hit that
+splits a run-together location can make two stored records match (#61).
 """
 from __future__ import annotations
 

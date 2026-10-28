@@ -19,6 +19,7 @@ from pathlib import Path
 import yaml
 
 from .common import ROOT, SCHEMA_VERSION, is_fuzzy_match, load_store, make_id, normalize, normalize_location, save_store
+from .dedupe import consolidate
 from .parsers import parse_applyguy, parse_simplify, parse_speedyapply
 
 UA = "job-aggregator/0.1 (+https://github.com; read-only public README fetch)"
@@ -154,6 +155,10 @@ def main(argv=None) -> int:
     seen: set[str] = set()
     stats = merge(store, incoming, args.today, seen)
     stats["closed"] = close_missing(store, seen, live, args.today) if args.sample >= 1 else 0
+    # An id hit that rewrites a run-together location can make two stored records
+    # fuzzy-match each other (#61); fold such pairs before the store is written.
+    store, folded = consolidate(store)
+    stats["consolidated"] = len(folded["merged"])
     save_store(store)
     print(json.dumps({**stats, "total": len(store), "row_counts": counts}))
     return 0
