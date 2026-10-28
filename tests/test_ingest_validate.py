@@ -113,3 +113,27 @@ def test_merge_only_rewrites_location_on_an_id_hit_that_adds_separators():
     assert store[0]["location"] == "SFNYC"
     ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1", location="SF; NYC")], "2026-10-04")
     assert store[0]["location"] == "San Francisco, CA; New York City, NY"
+
+
+def test_id_hit_location_rewrite_that_creates_a_fuzzy_pair_is_consolidated(tmp_path):
+    from scripts import dedupe
+
+    def errors(records):
+        save_store(records, tmp_path / "jobs.jsonl")
+        return validate.validate(tmp_path / "jobs.jsonl")
+
+    store = []
+    # two listings of one role: a speedyapply row and a Simplify row whose location was
+    # run together before #39, so their location tokens never overlapped
+    ingest.merge(store, [rec("KBR", "JR Software Engineer", "https://k.com/1", location="Chantilly, VA +6")], "2026-09-28")
+    ingest.merge(store, [rec("KBR", "Junior Software Engineer", "https://k.com/2", source="s2",
+                             location="King of Prussia, PAChantilly, VA")], "2026-09-28")
+    assert len(store) == 2 and not errors(store)
+    # the Simplify row comes back split; the id hit rewrites its location and the pair now overlaps
+    ingest.merge(store, [rec("KBR", "Junior Software Engineer", "https://k.com/2", source="s2",
+                             location="King of Prussia, PA; Chantilly, VA")], "2026-10-28")
+    assert any("fuzzy duplicate" in e for e in errors(store))
+    survivors, summary = dedupe.consolidate(store)
+    assert len(survivors) == 1 and len(summary["merged"]) == 1
+    assert {s["source"] for s in survivors[0]["sources"]} == {"s1", "s2"}
+    assert not errors(survivors)
