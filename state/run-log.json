@@ -397,6 +397,85 @@
         "speedyapply-2027-ai": 2462,
         "applyguy-2027-internships": 512
       }
+    },
+    {
+      "date": "2026-10-22",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-28",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-23",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-28",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-24",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-28",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-25",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-28",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-26",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-28",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-27",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-10-28",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-10-28",
+      "seed": "9b2e4725",
+      "budget": 4,
+      "units": [
+        "fix-fuzzy-pair-consolidation-issue-61",
+        "ingest-2026-10-28"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1787,
+        "simplify-new-grad-positions": 557,
+        "speedyapply-2027-swe": 3267,
+        "speedyapply-2027-ai": 2549,
+        "applyguy-2027-internships": 498
+      }
     }
   ]
 }
