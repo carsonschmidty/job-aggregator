@@ -10,3 +10,4 @@
 - Dedupe: fuzzy match no longer pairs titles that differ only by a language or platform name (C++ vs Python, iOS vs Android); each keeps its own apply link (#40).
 - Normalize: `London, United Kingdom`, `Singapore, Singapore`, `Toronto, Canada` and `Vancouver, Canada` map to the SimplifyJobs spelling (#46).
 - Normalize: `USA` maps to `United States` and `<State>, USA` to the bare state name, the SimplifyJobs spelling; 71 records relocated, 0 merged (#54).
+- Source: vanshb03/Summer2027-Internships (MIT) with a `vansh` parser; the `go.vansh.nyc` redirect is kept verbatim as `apply_url`, so cross-source matches rely on the fuzzy path (#73).

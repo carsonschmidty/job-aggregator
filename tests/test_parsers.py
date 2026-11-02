@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.parsers import _title_category, parse_applyguy, parse_simplify, parse_speedyapply
+from scripts.parsers import _title_category, parse_applyguy, parse_simplify, parse_speedyapply, parse_vansh
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -50,3 +50,14 @@ def test_title_category_prefers_specific_family_over_generic_engineering_words()
         "Health Insurance Product Intern": None,
     }
     assert {t: _title_category(t) for t in cases} == cases
+
+
+def test_vansh_continuations_locked_rows_and_multi_location():
+    rows = parse_vansh((FIX / "vansh.md").read_text(encoding="utf-8"), "internship")
+    assert [r["company"] for r in rows] == ["JM Family Enterprises", "TikTok", "TikTok", "Insomniac Games", "Sierra Nevada Corporation"]  # 🔒 row skipped, ↳ inherits
+    assert rows[0]["apply_url"] == "https://go.vansh.nyc/19j?s=y" and rows[0]["url"] == rows[0]["apply_url"]
+    assert rows[0]["category"] is None  # "AI Intern" matches no title family
+    assert rows[1]["category"] == "ai_ml_data" and rows[2]["category"] == "ai_ml_data"
+    assert rows[3]["location"] == "Burbank, CA; Remote; United States"
+    assert rows[4]["category"] == "hardware" and rows[4]["citizenship"] == "us_citizenship_required"
+    assert all(r["job_type"] == "internship" and r["salary"] is None for r in rows)
