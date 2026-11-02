@@ -20,7 +20,7 @@ import yaml
 
 from .common import ROOT, SCHEMA_VERSION, is_fuzzy_match, load_store, make_id, normalize, normalize_location, save_store
 from .dedupe import consolidate
-from .parsers import parse_applyguy, parse_simplify, parse_speedyapply
+from .parsers import parse_applyguy, parse_simplify, parse_speedyapply, parse_vansh
 
 UA = "job-aggregator/0.1 (+https://github.com; read-only public README fetch)"
 GUARD = 0.30  # max allowed row-count swing per source between runs
@@ -44,6 +44,8 @@ def parse_source(src: dict, offline: Path | None) -> list[dict]:
             parsed = parse_simplify(text, f["job_type"])
         elif src["parser"] == "applyguy":
             parsed = parse_applyguy(text, f["job_type"])
+        elif src["parser"] == "vansh":
+            parsed = parse_vansh(text, f["job_type"])
         else:
             parsed = parse_speedyapply(text, f["job_type"], src["category"])
         for r in parsed:

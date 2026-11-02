@@ -134,4 +134,33 @@ def parse_applyguy(text: str, job_type: str) -> list[dict]:
     return rows
 
 
-PARSERS = {"simplify": parse_simplify, "speedyapply": parse_speedyapply, "applyguy": parse_applyguy}
+def parse_vansh(text: str, job_type: str) -> list[dict]:
+    """vanshb03 READMEs: one markdown table; arrow rows inherit the company, locked rows are closed."""
+    rows, cols, company = [], None, ""
+    for line in text.splitlines():
+        if not line.startswith("|"):
+            cols = None if line.strip() else cols
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if cells and cells[0] == "Company":
+            cols = [c.lower() for c in cells]
+            continue
+        if cols is None or set(line.replace("|", "").strip()) <= {"-", " ", ":"}:
+            continue
+        rec = dict(zip(cols, cells))
+        name = _text(rec.get("company", ""))
+        if name and name != "↳":
+            company = name
+        title = _text(rec.get("role", ""))
+        hrefs = [_clean_url(h) for h in _HREF.findall(rec.get("application/link", ""))]
+        if not hrefs or not title:
+            continue  # 🔒 rows carry no link; the listing is closed
+        rows.append({
+            "company": company, "title": title, "location": _text(rec.get("location", "")),
+            "apply_url": hrefs[0], "url": hrefs[0], "category": _title_category(title),
+            "job_type": job_type, "salary": None, **_flags(title),
+        })
+    return rows
+
+
+PARSERS = {"simplify": parse_simplify, "speedyapply": parse_speedyapply, "applyguy": parse_applyguy, "vansh": parse_vansh}

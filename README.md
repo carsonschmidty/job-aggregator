@@ -13,6 +13,7 @@ Data lives in [`data/jobs.jsonl`](data/jobs.jsonl): one JSON object per line.
 | [speedyapply/2027-SWE-College-Jobs](https://github.com/speedyapply/2027-SWE-College-Jobs) | SWE internships and new grad, USA and international |
 | [speedyapply/2027-AI-College-Jobs](https://github.com/speedyapply/2027-AI-College-Jobs) | AI/ML internships and new grad, USA and international |
 | [ApplyGuy/2027-Internships](https://github.com/ApplyGuy/2027-Internships) | Internships, MIT licensed; category inferred from title, may be null |
+| [vanshb03/Summer2027-Internships](https://github.com/vanshb03/Summer2027-Internships) | Internships, MIT licensed; `apply_url` is the source's `go.vansh.nyc` redirect, category inferred from title, may be null |
 
 All listings are attributed to their origin in each record's `sources[]`. The registry is [`sources.yaml`](sources.yaml); see [`docs/SOURCES.md`](docs/SOURCES.md) for licensing notes and the monthly source-review policy.
 
