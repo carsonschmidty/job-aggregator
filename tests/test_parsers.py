@@ -52,12 +52,20 @@ def test_title_category_prefers_specific_family_over_generic_engineering_words()
     assert {t: _title_category(t) for t in cases} == cases
 
 
-def test_vansh_continuations_locked_rows_and_multi_location():
-    rows = parse_vansh((FIX / "vansh.md").read_text(encoding="utf-8"), "internship")
-    assert [r["company"] for r in rows] == ["JM Family Enterprises", "TikTok", "TikTok", "Insomniac Games", "Sierra Nevada Corporation"]  # 🔒 row skipped, ↳ inherits
+def test_vansh_reads_listings_json_like_the_readme_renders_it():
+    rows = parse_vansh((FIX / "vansh.json").read_text(encoding="utf-8"), "internship", ["Summer"])
+    # inactive (🔒), hidden and off-season listings are dropped
+    assert [r["company"] for r in rows] == ["JM Family Enterprises", "TikTok", "Insomniac Games", "Sierra Nevada Corporation", "Tesla"]
     assert rows[0]["apply_url"] == "https://go.vansh.nyc/19j?s=y" and rows[0]["url"] == rows[0]["apply_url"]
+    assert rows[4]["apply_url"] == "https://www.tesla.com/careers/search/job/281473"  # non-go links pass through untouched
     assert rows[0]["category"] is None  # "AI Intern" matches no title family
-    assert rows[1]["category"] == "ai_ml_data" and rows[2]["category"] == "ai_ml_data"
-    assert rows[3]["location"] == "Burbank, CA; Remote; United States"
-    assert rows[4]["category"] == "hardware" and rows[4]["citizenship"] == "us_citizenship_required"
+    assert rows[1]["category"] == "ai_ml_data"
+    assert rows[1]["title"] == "Machine Learning Engineer Intern, Brand Ads 🛂" and rows[1]["sponsorship"] == "no_sponsorship"
+    assert rows[2]["location"] == "Burbank, CA; Remote; United States"
+    assert rows[3]["category"] == "hardware" and rows[3]["citizenship"] == "us_citizenship_required"
     assert all(r["job_type"] == "internship" and r["salary"] is None for r in rows)
+
+
+def test_vansh_offseason_rows_use_the_offseason_page_code():
+    rows = parse_vansh((FIX / "vansh.json").read_text(encoding="utf-8"), "internship", ["Fall", "Winter", "Spring"])
+    assert [(r["title"], r["apply_url"]) for r in rows] == [("Software Engineer Intern, Vehicle Software", "https://go.vansh.nyc/11C?s=z")]

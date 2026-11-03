@@ -64,4 +64,5 @@ sources:
     added: 2026-11-02
     license: MIT
     files:
-      - {raw_url: "https://raw.githubusercontent.com/vanshb03/Summer2027-Internships/dev/README.md", job_type: internship}
+      # The READMEs are generated from listings.json; README.md shows the Summer rows of it.
+      - {raw_url: "https://raw.githubusercontent.com/vanshb03/Summer2027-Internships/dev/.github/scripts/listings.json", job_type: internship, seasons: [Summer]}
