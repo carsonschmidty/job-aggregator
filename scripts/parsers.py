@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import html
+import json
 import re
 
 _TAG = re.compile(r"<[^>]+>")
@@ -134,31 +135,28 @@ def parse_applyguy(text: str, job_type: str) -> list[dict]:
     return rows
 
 
-def parse_vansh(text: str, job_type: str) -> list[dict]:
-    """vanshb03 READMEs: one markdown table; arrow rows inherit the company, locked rows are closed."""
-    rows, cols, company = [], None, ""
-    for line in text.splitlines():
-        if not line.startswith("|"):
-            cols = None if line.strip() else cols
+# Links as the READMEs render them, so urls and ids match what this source already produced.
+_VANSH_GO_LINK = re.compile(r"^https://go\.vansh\.nyc/[0-9A-Za-z]{1,6}$")
+# The README appends these to the role; the other sources do too, and `_flags` reads them from there.
+_VANSH_SPONSORSHIP = {"Does Not Offer Sponsorship": " 🛂", "U.S. Citizenship is Required": " 🇺🇸"}
+
+
+def parse_vansh(text: str, job_type: str, seasons: list[str] | None = None) -> list[dict]:
+    """vanshb03 listings.json: the data the READMEs are generated from. Inactive or hidden listings are closed."""
+    rows = []
+    for item in json.loads(text):
+        if not item.get("active") or not item.get("is_visible"):
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        if cells and cells[0] == "Company":
-            cols = [c.lower() for c in cells]
+        if seasons and item.get("season") not in seasons:
             continue
-        if cols is None or set(line.replace("|", "").strip()) <= {"-", " ", ":"}:
-            continue
-        rec = dict(zip(cols, cells))
-        name = _text(rec.get("company", ""))
-        if name and name != "↳":
-            company = name
-        title = _text(rec.get("role", ""))
-        hrefs = [_clean_url(h) for h in _HREF.findall(rec.get("application/link", ""))]
-        if not hrefs or not title:
-            continue  # 🔒 rows carry no link; the listing is closed
+        title = item["title"].strip() + _VANSH_SPONSORSHIP.get(item.get("sponsorship"), "")
+        url = item["url"].strip()
+        if _VANSH_GO_LINK.match(url):
+            url += "?s=" + ("y" if item.get("season") == "Summer" else "z")
         rows.append({
-            "company": company, "title": title, "location": _text(rec.get("location", "")),
-            "apply_url": hrefs[0], "url": hrefs[0], "category": _title_category(title),
-            "job_type": job_type, "salary": None, **_flags(title),
+            "company": item["company_name"].strip(), "title": title,
+            "location": "; ".join(item.get("locations") or []), "apply_url": url, "url": url,
+            "category": _title_category(title), "job_type": job_type, "salary": None, **_flags(title),
         })
     return rows
 

@@ -45,7 +45,7 @@ def parse_source(src: dict, offline: Path | None) -> list[dict]:
         elif src["parser"] == "applyguy":
             parsed = parse_applyguy(text, f["job_type"])
         elif src["parser"] == "vansh":
-            parsed = parse_vansh(text, f["job_type"])
+            parsed = parse_vansh(text, f["job_type"], f.get("seasons"))
         else:
             parsed = parse_speedyapply(text, f["job_type"], src["category"])
         for r in parsed:
