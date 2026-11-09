@@ -48,6 +48,22 @@ def test_title_category_prefers_specific_family_over_generic_engineering_words()
         "Intern - UX/UI Front End Engineer - Starting Spring 2027": "swe",
         "Assistant Front End Manager Trainee": None,
         "Health Insurance Product Intern": None,
+        "Data Analyst Intern": "ai_ml_data",
+        "Data and Analytics Engineer Intern": "ai_ml_data",
+        "Business Intelligence (BI) Intern": "ai_ml_data",
+        "ASIC Engineer Intern": "hardware",
+        "FPGA Intern": "hardware",
+        "CPU Design Verification Engineer Intern": "hardware",
+        "Analog IC Design Co-op": "hardware",
+        "Application Development Intern": "swe",
+        "Frontend Engineer Intern": "swe",
+        "Design Engineer Intern, Pathfinding": "hardware",
+        "Electrical & Computer Engineering Intern": "hardware",
+        "Analog Mixed-Signal Modeling Software Engineer": "swe",
+        "Network Site Design Intern": None,
+        "Data Center Engineer Intern": None,
+        "Risk & Analytics Core Intern": None,
+        "Cybersecurity Intern": None,
     }
     assert {t: _title_category(t) for t in cases} == cases
 
