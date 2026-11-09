@@ -40,6 +40,8 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 
 Duplicates are prevented by an exact id check plus a fuzzy match (same company and job type, title similarity at least 0.9, same language or platform names in the title, overlapping location). `python -m scripts.validate` fails on either.
 
+Open records that share a canonical apply URL under different ids are not merged; [`docs/shared-apply-urls.md`](docs/shared-apply-urls.md) lists them and is regenerated with `python -m scripts.report` (#68).
+
 ## Usage
 
 ```bash
