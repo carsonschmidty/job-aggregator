@@ -99,6 +99,12 @@ _TITLE_CATEGORY = (
     ("cloud", "swe"), ("full-stack", "swe"), ("full stack", "swe"), ("front-end", "swe"),
     ("back-end", "swe"), ("backend", "swe"), ("linux engineer", "swe"),
     ("infrastructure engineer", "swe"), ("front end engineer", "swe"),  # bare "front end" would catch retail titles
+    # These sit below the generic words so they only decide titles nothing above matches
+    # ("Analog Mixed-Signal Modeling Software Engineer" stays swe).
+    ("data analy", "ai_ml_data"), ("analytics engineer", "ai_ml_data"), ("business intelligence", "ai_ml_data"),
+    ("asic", "hardware"), ("fpga", "hardware"), ("design verification", "hardware"), ("analog", "hardware"),
+    ("application development", "swe"), ("frontend", "swe"),
+    ("design engineer", "hardware"), ("electrical", "hardware"),  # bare "design" catches "Network Site Design Intern"
 )
 
 

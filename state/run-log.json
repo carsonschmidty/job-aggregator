@@ -619,6 +619,57 @@
         "applyguy-2027-internships": 467,
         "vanshb03-summer2027-internships": 1698
       }
+    },
+    {
+      "date": "2026-11-06",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-11-09",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-11-07",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-11-09",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-11-08",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-11-09",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-11-09",
+      "seed": "e9242cdc",
+      "budget": 3,
+      "units": [
+        "ingest-2026-11-09",
+        "shared-apply-url-report-issue-90",
+        "title-categories-issue-92"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1591,
+        "simplify-new-grad-positions": 593,
+        "speedyapply-2027-swe": 3146,
+        "speedyapply-2027-ai": 2506,
+        "applyguy-2027-internships": 433,
+        "vanshb03-summer2027-internships": 1832
+      }
     }
   ]
 }
