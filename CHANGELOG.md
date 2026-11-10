@@ -12,3 +12,4 @@
 - Normalize: `USA` maps to `United States` and `<State>, USA` to the bare state name, the SimplifyJobs spelling; 71 records relocated, 0 merged (#54).
 - Source: vanshb03/Summer2027-Internships (MIT) with a `vansh` parser; the `go.vansh.nyc` redirect is kept verbatim as `apply_url`, so cross-source matches rely on the fuzzy path (#73).
 - Dedupe: `scripts.report` writes `docs/shared-apply-urls.md`, the open records that share a canonical apply URL under different ids, grouped by company relation; store unchanged (#90, #68).
+- Normalize: `<City>, United Kingdom` maps to `<City>, UK` and `Remote - United Kingdom` to `Remote - UK`, the SimplifyJobs spelling; `+N` cells unchanged; 151 records relocated, 0 merged (#99).

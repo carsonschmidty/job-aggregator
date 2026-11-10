@@ -67,6 +67,7 @@ def test_normalize_location_single_city_aliases():
 def test_normalize_location_multi_city_keeps_every_city_and_drops_repeats():
     assert normalize_location("Seattle, WA; SF; NYC") == "Seattle, WA; San Francisco, CA; New York City, NY"
     assert normalize_location("NYC; New York City, NY; ") == "New York City, NY"
+    assert normalize_location("Bristol, UK; Bristol, United Kingdom") == "Bristol, UK"
 
 
 def test_normalize_location_international_city_aliases():
@@ -77,6 +78,20 @@ def test_normalize_location_international_city_aliases():
     # The source's truncated form keeps its `+N` marker and is left alone here.
     assert normalize_location("London, United Kingdom +1") == "London, United Kingdom +1"
     assert normalize_location("Londonderry, UK") == "Londonderry, UK"
+
+
+def test_normalize_location_uk_city_spelling():
+    assert normalize_location("Bristol, United Kingdom") == "Bristol, UK"
+    assert normalize_location("Newcastle upon Tyne, United Kingdom") == "Newcastle upon Tyne, UK"
+    assert normalize_location("Remote - Belfast, United Kingdom") == "Remote - Belfast, UK"
+    assert normalize_location("Remote in Belfast, United Kingdom") == "Remote - Belfast, UK"
+    for raw in ("Remote - United Kingdom", "Remote in United Kingdom", "Remote in UK"):
+        assert normalize_location(raw) == "Remote - UK"
+    assert normalize_location("United Kingdom") == "United Kingdom"
+    assert normalize_location("Bristol, United Kingdom +1") == "Bristol, United Kingdom +1"
+    for raw in ("Bristol, United Kingdom", "Remote in Belfast, United Kingdom", "Remote in United Kingdom"):
+        once = normalize_location(raw)
+        assert normalize_location(once) == once
 
 
 def test_normalize_location_us_country_and_state_aliases():
