@@ -36,8 +36,12 @@ _LOCATION_ALIAS = {
     "london, united kingdom": "London, UK", "singapore, singapore": "Singapore",
     "toronto, canada": "Toronto, ON, Canada", "vancouver, canada": "Vancouver, BC, Canada",
     "usa": "United States",
+    "remote - united kingdom": "Remote - UK", "remote in united kingdom": "Remote - UK",
 }
 _REMOTE_IN = re.compile(r"^remote in (.+)$", re.I)
+# speedyapply writes UK cities as "<City>, United Kingdom"; SimplifyJobs writes "<City>, UK".
+# The end anchor leaves truncated "+N" cells as published (#55).
+_CITY_UK = re.compile(r"^(.+), united kingdom$", re.I)
 # speedyapply writes country-level and state-level US cells with a `USA` suffix ("USA",
 # "Iowa, USA"); SimplifyJobs writes "United States" and the bare state name.
 _STATE_USA = re.compile(r"^(.+), usa$")
@@ -87,6 +91,9 @@ def normalize_location(location: str) -> str:
             seg = f"Remote - {m.group(1)}"
         elif (m := _STATE_USA.match(seg.lower())) and m.group(1) in _US_STATES:
             seg = _US_STATES[m.group(1)]
+        # After the chain, so "Remote in <City>, United Kingdom" settles in one pass.
+        if (m := _CITY_UK.match(seg)):
+            seg = f"{m.group(1)}, UK"
         if seg not in out:
             out.append(seg)
     return "; ".join(out)
