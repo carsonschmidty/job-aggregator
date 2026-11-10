@@ -670,6 +670,30 @@
         "applyguy-2027-internships": 433,
         "vanshb03-summer2027-internships": 1832
       }
+    },
+    {
+      "date": "2026-11-10",
+      "seed": "e0cbdd59",
+      "budget": 6,
+      "units": [
+        "ingest-2026-11-10",
+        "guard-baseline-skip-entries-issue-96",
+        "backlog-guard-carry-issue-98",
+        "uk-location-aliases-issue-99",
+        "ml-title-categories-issue-101",
+        "consolidation-contract-issue-103"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1584,
+        "simplify-new-grad-positions": 605,
+        "speedyapply-2027-swe": 3124,
+        "speedyapply-2027-ai": 2519,
+        "applyguy-2027-internships": 449,
+        "vanshb03-summer2027-internships": 1868
+      }
     }
   ]
 }
