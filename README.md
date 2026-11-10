@@ -19,7 +19,7 @@ All listings are attributed to their origin in each record's `sources[]`. The re
 
 ## Consumer contract (schema_version 1)
 
-Records are updated in place by `id`. A listing that disappears from every source gets `status: "closed"`; records are never deleted by ingest. The one exception is a dedupe consolidation (`python -m scripts.dedupe`), run only when a matcher change reveals that two existing records are the same listing: the newer id is removed and its `sources[]` fold into the older record. Every consolidation lists the removed ids in its PR and in `CHANGELOG.md`.
+Records are updated in place by `id`. A listing that disappears from every source gets `status: "closed"`; records are never deleted, with one exception: a dedupe consolidation, when two stored records turn out to be the same listing. The record seen later (by `first_seen`, then `id`) is removed and its `sources[]` fold into the other. Ingest consolidates on every run, because an exact-id hit that splits a run-together location can make two stored records match (#61); `python -m scripts.dedupe` does the same after a matcher change. Every consolidation lists the removed ids in its PR and in `CHANGELOG.md`; the ingest summary prints them under `consolidated_ids`.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -46,7 +46,7 @@ Open records that share a canonical apply URL under different ids are not merged
 
 ```bash
 pip install -r requirements.txt
-python -m scripts.ingest      # fetch all sources, merge, close vanished listings
+python -m scripts.ingest      # fetch all sources, merge, close vanished listings, consolidate fuzzy pairs
 python -m scripts.validate    # schema + duplicate check (also runs in CI)
 python -m pytest -q
 ```
