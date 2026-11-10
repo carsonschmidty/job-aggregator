@@ -60,6 +60,21 @@ def test_guard_blocks_large_swings_only():
     assert ingest.guard_ok("x", 140, {"x": 100}) is False
 
 
+def test_last_row_counts_skips_backfilled_skip_entries(tmp_path, monkeypatch):
+    log = tmp_path / "run-log.json"
+    monkeypatch.setattr(ingest, "RUN_LOG", log)
+    assert ingest.last_row_counts() == {}
+    log.write_text(json.dumps({"runs": [
+        {"date": "2026-11-05", "row_counts": {"a": 100}},
+        {"date": "2026-11-06", "skipped": True, "row_counts": None},
+    ]}))
+    prior = ingest.last_row_counts()
+    assert prior == {"a": 100}
+    assert not ingest.guard_ok("a", 10, prior)
+    log.write_text(json.dumps({"runs": [{"date": "2026-11-06", "skipped": True, "row_counts": None}]}))
+    assert ingest.last_row_counts() == {}
+
+
 def test_validate_flags_duplicates_and_bad_schema(tmp_path):
     good = rec("Acme", "SWE Intern", "https://a.com/1")
     path = tmp_path / "jobs.jsonl"

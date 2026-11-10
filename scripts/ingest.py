@@ -55,11 +55,15 @@ def parse_source(src: dict, offline: Path | None) -> list[dict]:
 
 
 def last_row_counts() -> dict:
+    """Row counts of the latest run-log entry that has them.
+
+    A skip-day backfill entry carries `row_counts: null`, so the guard compares against the
+    last run that actually fetched. An entry with an empty dict is skipped the same way.
+    """
     if not RUN_LOG.exists():
         return {}
-    log = json.loads(RUN_LOG.read_text())
-    entries = log.get("runs", [])
-    return entries[-1].get("row_counts", {}) if entries else {}
+    runs = json.loads(RUN_LOG.read_text()).get("runs", [])
+    return next((r["row_counts"] for r in reversed(runs) if r.get("row_counts")), {})
 
 
 def guard_ok(name: str, count: int, prior: dict) -> bool:
