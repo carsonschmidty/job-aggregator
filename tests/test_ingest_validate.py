@@ -152,3 +152,31 @@ def test_id_hit_location_rewrite_that_creates_a_fuzzy_pair_is_consolidated(tmp_p
     assert len(survivors) == 1 and len(summary["merged"]) == 1
     assert {s["source"] for s in survivors[0]["sources"]} == {"s1", "s2"}
     assert not errors(survivors)
+
+
+def test_main_prints_the_ids_a_consolidation_removes(monkeypatch, capsys):
+    older = rec("KBR", "JR Software Engineer", "https://k.com/1", location="Chantilly, VA +6")
+    newer = rec("KBR", "Junior Software Engineer", "https://k.com/2", source="s2",
+                location="King of Prussia, PAChantilly, VA")
+    newer["first_seen"] = "2026-10-02"
+    saved = []
+    split = {"company": "KBR", "title": "Junior Software Engineer", "location": "King of Prussia, PA; Chantilly, VA",
+             "apply_url": "https://k.com/2", "url": "https://k.com/2", "category": "swe", "job_type": "internship",
+             "salary": None, "sponsorship": None, "citizenship": None}
+    first = []
+
+    def parse_source(src, offline):
+        if first and first[0] != src["name"]:
+            return []
+        first.append(src["name"])
+        return [{**split, "_source": {"source": src["name"], "source_url": src["url"]}}]
+
+    monkeypatch.setattr(ingest, "parse_source", parse_source)
+    monkeypatch.setattr(ingest, "last_row_counts", lambda: {})
+    monkeypatch.setattr(ingest, "load_store", lambda: [older, newer])
+    monkeypatch.setattr(ingest, "save_store", saved.append)
+    assert ingest.main(["--today", "2026-10-28"]) == 0
+    summary = json.loads(capsys.readouterr().out)
+    assert summary["consolidated"] == 1
+    assert summary["consolidated_ids"] == [{"removed": newer["id"], "into": older["id"]}]
+    assert [r["id"] for r in saved[0]] == [older["id"]]
