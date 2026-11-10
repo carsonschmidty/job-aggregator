@@ -64,6 +64,16 @@ def test_title_category_prefers_specific_family_over_generic_engineering_words()
         "Data Center Engineer Intern": None,
         "Risk & Analytics Core Intern": None,
         "Cybersecurity Intern": None,
+        "Deep Learning Intern": "ai_ml_data",
+        "Computer Vision Intern, Multiple Teams": "ai_ml_data",
+        "Perception Intern": "ai_ml_data",
+        "Software Engineer II - Perception": "swe",
+        "Applied Scientist Intern, Turing": "ai_ml_data",
+        "Research Scientist Intern": "ai_ml_data",
+        "AI Scientist/Engineer Intern": "ai_ml_data",
+        "AI Research Intern": "ai_ml_data",
+        "Student Researcher Intern, Seed Model - AI Foundation Model Infrastructure": "ai_ml_data",
+        "Data Governance Engineer Intern": "ai_ml_data",
     }
     assert {t: _title_category(t) for t in cases} == cases
 

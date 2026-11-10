@@ -105,6 +105,11 @@ _TITLE_CATEGORY = (
     ("asic", "hardware"), ("fpga", "hardware"), ("design verification", "hardware"), ("analog", "hardware"),
     ("application development", "swe"), ("frontend", "swe"),
     ("design engineer", "hardware"), ("electrical", "hardware"),  # bare "design" catches "Network Site Design Intern"
+    # ML disciplines and research roles, last so "Software Engineer II - Perception" stays swe.
+    # No bare "llm" or "ml " (they hit Fulfillment and AML) and no bare "ai" ("AI Intern" stays null).
+    ("deep learning", "ai_ml_data"), ("computer vision", "ai_ml_data"), ("perception", "ai_ml_data"),
+    ("applied scientist", "ai_ml_data"), ("research scientist", "ai_ml_data"), ("ai scientist", "ai_ml_data"),
+    ("ai research", "ai_ml_data"), ("foundation model", "ai_ml_data"), ("data governance", "ai_ml_data"),
 )
 
 
