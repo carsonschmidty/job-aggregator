@@ -165,6 +165,7 @@ def main(argv=None) -> int:
     # fuzzy-match each other (#61); fold such pairs before the store is written.
     store, folded = consolidate(store)
     stats["consolidated"] = len(folded["merged"])
+    stats["consolidated_ids"] = [{"removed": m["removed"], "into": m["into"]} for m in folded["merged"]]
     save_store(store)
     print(json.dumps({**stats, "total": len(store), "row_counts": counts}))
     return 0
