@@ -112,7 +112,7 @@ def merge(store: list[dict], incoming: list[dict], today: str, seen: set[str] | 
         known = {(s["source"]) for s in hit["sources"]}
         if rec["sources"][0]["source"] not in known:
             hit["sources"].append(rec["sources"][0])
-        hit["last_seen"], hit["status"] = today, "open"
+        hit["last_seen"], hit["status"] = today, "open"  # a source lists it again; closed is not terminal
         if rec["id"] == hit["id"] and _gains_separators(hit["location"], rec["location"]):
             hit["location"] = rec["location"]
         if hit.get("category") is None and rec.get("category"):
@@ -158,6 +158,7 @@ def main(argv=None) -> int:
         incoming += [r for raw in rows if keep((r := to_record(dict(raw), args.today))["id"], args.sample)]
 
     store = load_store()
+    was_closed = {r["id"] for r in store if r["status"] == "closed"}
     seen: set[str] = set()
     stats = merge(store, incoming, args.today, seen)
     stats["closed"] = close_missing(store, seen, live, args.today) if args.sample >= 1 else 0
@@ -166,6 +167,9 @@ def main(argv=None) -> int:
     store, folded = consolidate(store)
     stats["consolidated"] = len(folded["merged"])
     stats["consolidated_ids"] = [{"removed": m["removed"], "into": m["into"]} for m in folded["merged"]]
+    # Measured on the store as saved, so a record hit by several sources counts once, a folded
+    # record is not counted, and a closed survivor that a consolidation opens is.
+    stats["reopened"] = sum(1 for r in store if r["id"] in was_closed and r["status"] == "open")
     save_store(store)
     print(json.dumps({**stats, "total": len(store), "row_counts": counts}))
     return 0
