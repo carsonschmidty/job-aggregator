@@ -34,6 +34,18 @@ def test_merge_fills_missing_category_but_never_overwrites():
     assert [r["category"] for r in store] == ["hardware", "ai_ml_data"]
 
 
+def test_merge_reopens_closed_records_on_id_and_fuzzy_hits():
+    store = [rec("Acme", "SWE Intern", "https://a.com/1"), rec("Acme", "Data Intern", "https://a.com/2")]
+    for r in store:
+        r["status"], r["last_seen"] = "closed", "2026-10-05"
+    stats = ingest.merge(store, [
+        rec("Acme", "SWE Intern", "https://a.com/1"),  # id hit
+        rec("Acme", "Data Intern.", "https://a.com/other", source="s2", location="NYC, NY"),  # fuzzy hit
+    ], "2026-10-06")
+    assert stats == {"new": 0, "updated": 2, "duplicates_rejected": 2}
+    assert [(r["status"], r["last_seen"]) for r in store] == [("open", "2026-10-06")] * 2
+
+
 def test_close_missing_only_touches_live_sources():
     store = []
     ingest.merge(store, [rec("A", "T1", "https://a/1"), rec("B", "T2", "https://b/1", source="dead")], "2026-10-01")
@@ -180,3 +192,54 @@ def test_main_prints_the_ids_a_consolidation_removes(monkeypatch, capsys):
     assert summary["consolidated"] == 1
     assert summary["consolidated_ids"] == [{"removed": newer["id"], "into": older["id"]}]
     assert [r["id"] for r in saved[0]] == [older["id"]]
+
+
+def test_main_reports_reopened_records_in_the_summary(monkeypatch, capsys):
+    gone = rec("Acme", "SWE Intern", "https://a.com/1")
+    gone["status"], gone["last_seen"] = "closed", "2026-10-05"
+    row = {"company": "Acme", "title": "SWE Intern", "location": "NYC", "apply_url": "https://a.com/1",
+           "url": "https://a.com/1", "category": "swe", "job_type": "internship", "salary": None,
+           "sponsorship": None, "citizenship": None}
+    saved = []
+
+    def parse_source(src, offline):  # every source lists the same row: one reopen, not one per source
+        return [{**row, "_source": {"source": src["name"], "source_url": src["url"]}}]
+
+    monkeypatch.setattr(ingest, "parse_source", parse_source)
+    monkeypatch.setattr(ingest, "last_row_counts", lambda: {})
+    monkeypatch.setattr(ingest, "load_store", lambda: [gone])
+    monkeypatch.setattr(ingest, "save_store", saved.append)
+    assert ingest.main(["--today", "2026-10-06"]) == 0
+    summary = json.loads(capsys.readouterr().out)
+    assert (summary["reopened"], summary["new"], summary["closed"]) == (1, 0, 0)
+    assert summary["duplicates_rejected"] > 1
+    assert saved[0][0]["status"] == "open" and saved[0][0]["last_seen"] == "2026-10-06"
+
+
+def test_main_counts_reopened_on_the_saved_store_after_consolidation(monkeypatch, capsys):
+    # A is closed and no source lists it. B is open and comes back with a split location that now
+    # overlaps A, so consolidate folds B into A and opens A: one reopened record, measured after the fold.
+    a = rec("Acme", "SWE Intern", "https://a.com/A", location="San Francisco, CA")
+    b = rec("Acme", "SWE Intern", "https://a.com/B", location="New York, NY")
+    a["first_seen"], a["status"], a["last_seen"] = "2026-09-01", "closed", "2026-10-05"
+    assert not ingest.is_fuzzy_match(a, b)
+    row = {"company": "Acme", "title": "SWE Intern", "location": "New York, NY; San Francisco, CA",
+           "apply_url": "https://a.com/B", "url": "https://a.com/B", "category": "swe", "job_type": "internship",
+           "salary": None, "sponsorship": None, "citizenship": None}
+    saved, first = [], []
+
+    def parse_source(src, offline):
+        if first and first[0] != src["name"]:
+            return []
+        first.append(src["name"])
+        return [{**row, "_source": {"source": src["name"], "source_url": src["url"]}}]
+
+    monkeypatch.setattr(ingest, "parse_source", parse_source)
+    monkeypatch.setattr(ingest, "last_row_counts", lambda: {})
+    monkeypatch.setattr(ingest, "load_store", lambda: [a, b])
+    monkeypatch.setattr(ingest, "save_store", saved.append)
+    assert ingest.main(["--today", "2026-10-06"]) == 0
+    summary = json.loads(capsys.readouterr().out)
+    assert (summary["reopened"], summary["consolidated"], summary["closed"]) == (1, 1, 0)
+    assert summary["consolidated_ids"] == [{"removed": b["id"], "into": a["id"]}]
+    assert [(r["id"], r["status"]) for r in saved[0]] == [(a["id"], "open")]

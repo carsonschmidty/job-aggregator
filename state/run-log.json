@@ -694,6 +694,26 @@
         "applyguy-2027-internships": 449,
         "vanshb03-summer2027-internships": 1868
       }
+    },
+    {
+      "date": "2026-11-11",
+      "seed": "7bc87c61",
+      "budget": 2,
+      "units": [
+        "ingest-2026-11-11",
+        "reopened-count-issue-107"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1572,
+        "simplify-new-grad-positions": 614,
+        "speedyapply-2027-swe": 3110,
+        "speedyapply-2027-ai": 2501,
+        "applyguy-2027-internships": 443,
+        "vanshb03-summer2027-internships": 1943
+      }
     }
   ]
 }

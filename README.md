@@ -19,7 +19,7 @@ All listings are attributed to their origin in each record's `sources[]`. The re
 
 ## Consumer contract (schema_version 1)
 
-Records are updated in place by `id`. A listing that disappears from every source gets `status: "closed"`; records are never deleted, with one exception: a dedupe consolidation, when two stored records turn out to be the same listing. The record seen later (by `first_seen`, then `id`) is removed and its `sources[]` fold into the other. Ingest consolidates on every run, because an exact-id hit that splits a run-together location can make two stored records match (#61); `python -m scripts.dedupe` does the same after a matcher change. Every consolidation lists the removed ids in its PR and in `CHANGELOG.md`; the ingest summary prints them under `consolidated_ids`.
+Records are updated in place by `id`. A listing that disappears from every source gets `status: "closed"`. `closed` is not final: when any source lists the record again it goes back to `open` with a fresh `last_seen` (the ingest summary counts these under `reopened`; the speedyapply tables in particular drop rows and bring them back between commits), so a consumer should keep closed records in reach rather than treat the status as terminal. Records are never deleted, with one exception: a dedupe consolidation, when two stored records turn out to be the same listing. The record seen later (by `first_seen`, then `id`) is removed and its `sources[]` fold into the other. Ingest consolidates on every run, because an exact-id hit that splits a run-together location can make two stored records match (#61); `python -m scripts.dedupe` does the same after a matcher change. Every consolidation lists the removed ids in its PR and in `CHANGELOG.md`; the ingest summary prints them under `consolidated_ids`.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -32,7 +32,7 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 | `category` | string or null | `swe`, `pm`, `ai_ml_data`, `quant`, `hardware`; null when the source gives no category and the title is ambiguous |
 | `job_type` | string | `internship` or `new_grad` |
 | `first_seen`, `last_seen` | date | ISO dates |
-| `status` | string | `open` or `closed` |
+| `status` | string | `open` or `closed`; a closed record returns to `open` when a source relists it |
 | `sponsorship` | string or null | `no_sponsorship` when the source flags it |
 | `citizenship` | string or null | `us_citizenship_required` when the source flags it |
 | `salary` | string or null | Verbatim from source when present |
