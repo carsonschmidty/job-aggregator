@@ -714,6 +714,36 @@
         "applyguy-2027-internships": 443,
         "vanshb03-summer2027-internships": 1943
       }
+    },
+    {
+      "date": "2026-11-12",
+      "seed": null,
+      "budget": null,
+      "units": [],
+      "skipped": true,
+      "skip_reason": "no run completed; backfilled on 2026-11-13",
+      "status": "complete",
+      "row_counts": null
+    },
+    {
+      "date": "2026-11-13",
+      "seed": "7423cbd9",
+      "budget": 2,
+      "units": [
+        "ingest-2026-11-13",
+        "canadian-city-spelling-issue-111"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1551,
+        "simplify-new-grad-positions": 621,
+        "speedyapply-2027-swe": 3331,
+        "speedyapply-2027-ai": 2587,
+        "applyguy-2027-internships": 440,
+        "vanshb03-summer2027-internships": 1996
+      }
     }
   ]
 }
