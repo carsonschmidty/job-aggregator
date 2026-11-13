@@ -94,6 +94,34 @@ def test_normalize_location_uk_city_spelling():
         assert normalize_location(once) == once
 
 
+def test_normalize_location_canadian_city_spelling():
+    assert normalize_location("Ottawa, Canada") == "Ottawa, ON, Canada"
+    assert normalize_location("Calgary, Canada") == "Calgary, AB, Canada"
+    assert normalize_location("Richmond, Canada") == "Richmond, BC, Canada"
+    assert normalize_location("Richmond Hill, Canada") == "Richmond Hill, ON, Canada"
+    assert normalize_location("Montréal, Canada") == "Montreal, QC, Canada"
+    assert normalize_location("Montreal, QC") == "Montreal, QC, Canada"
+    assert normalize_location("Mississauga, ON") == "Mississauga, ON, Canada"
+    assert normalize_location("Remote - Edmonton, Canada") == "Remote - Edmonton, AB, Canada"
+    assert normalize_location("Remote in Toronto, Canada") == "Remote - Toronto, ON, Canada"
+    assert normalize_location("Montréal, Canada; Montreal, QC, Canada") == "Montreal, QC, Canada"
+    # Province-level cells, cities without a SimplifyJobs spelling, a province code that does
+    # not match the city, two-letter codes that are also country codes, and "+N" cells stay.
+    for raw in ("Ontario, Canada", "Québec, Canada", "Kanata, Canada", "Cambridge, Canada",
+                "Ottawa, QC", "Bratislava, SK", "Amsterdam, NL", "Montréal, Canada +1", "Canada",
+                "Remote - Canada"):
+        assert normalize_location(raw) == raw
+    for raw in ("Montréal, Canada", "Remote in Toronto, Canada", "Ottawa, ON", "Québec City, QC, Canada"):
+        once = normalize_location(raw)
+        assert normalize_location(once) == once
+
+
+def test_normalize_location_canadian_spellings_fuzzy_match():
+    a = {"company": "Tower Research Capital", "title": "Machine Learning Intern", "job_type": "internship",
+         "location": "Montréal, Canada"}
+    assert is_fuzzy_match(a, {**a, "location": "Montreal, QC"})
+
+
 def test_normalize_location_us_country_and_state_aliases():
     assert normalize_location("USA") == "United States"
     assert normalize_location("Iowa, USA") == "Iowa"
