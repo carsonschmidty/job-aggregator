@@ -16,3 +16,4 @@
 - Normalize: `<City>, United Kingdom` maps to `<City>, UK` and `Remote - United Kingdom` to `Remote - UK`, the SimplifyJobs spelling; `+N` cells unchanged; 151 records relocated, 0 merged (#99).
 - Ingest: the JSON summary lists each consolidation's removed and surviving id under `consolidated_ids`, next to the `consolidated` count (#103).
 - Ingest: the JSON summary counts stored records whose `status` went from `closed` back to `open` under `reopened`; the contract says `closed` is not terminal (#107).
+- Normalize: `<City>, Canada`, `Remote - <City>, Canada` and `<City>, <PROV>` map to the SimplifyJobs `<City>, <PROV>, Canada` spelling for the 21 Canadian cities that spelling already covers, and `Montréal` to `Montreal`; province-level and `+N` cells unchanged; 208 records relocated, 1 merged (`d498ef0ba03641b8` into `8682d08cee456db7`, Tower Research Capital) (#111).

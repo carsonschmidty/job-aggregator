@@ -34,7 +34,6 @@ _LOCATION_ALIAS = {
     "remote - us": "Remote - USA", "remote usa": "Remote - USA", "remote (usa)": "Remote - USA",
     # speedyapply country spellings for cities SimplifyJobs writes with a region code or bare.
     "london, united kingdom": "London, UK", "singapore, singapore": "Singapore",
-    "toronto, canada": "Toronto, ON, Canada", "vancouver, canada": "Vancouver, BC, Canada",
     "usa": "United States",
     "remote - united kingdom": "Remote - UK", "remote in united kingdom": "Remote - UK",
 }
@@ -42,6 +41,21 @@ _REMOTE_IN = re.compile(r"^remote in (.+)$", re.I)
 # speedyapply writes UK cities as "<City>, United Kingdom"; SimplifyJobs writes "<City>, UK".
 # The end anchor leaves truncated "+N" cells as published (#55).
 _CITY_UK = re.compile(r"^(.+), united kingdom$", re.I)
+# speedyapply writes Canadian cities as "<City>, Canada" and vansh sometimes as "<City>, ON";
+# SimplifyJobs writes "<City>, <PROV>, Canada". Only cities whose SimplifyJobs spelling is in
+# the store are listed, so the province is never guessed; province-level cells ("Ontario,
+# Canada"), other cities and truncated "+N" cells (#55) stay as published.
+_CA_CITIES = {c.lower(): (c, prov) for prov, cities in {
+    "AB": ("Calgary", "Edmonton"),
+    "BC": ("Burnaby", "Richmond", "Vancouver", "Victoria"),
+    "ON": ("Burlington", "Etobicoke", "Markham", "Mississauga", "North York", "Ottawa", "Richmond Hill",
+           "Toronto", "Waterloo"),
+    "QC": ("Brossard", "Gatineau", "Mirabel", "Montreal", "Québec City"),
+    "YT": ("Whitehorse",),
+}.items() for c in cities}
+_CA_CITIES["montréal"] = _CA_CITIES["montreal"]
+_CITY_CANADA = re.compile(r"^(Remote - )?(.+), canada$", re.I)
+_CITY_PROV = re.compile(r"^(.+), (AB|BC|ON|QC|YT)$")
 # speedyapply writes country-level and state-level US cells with a `USA` suffix ("USA",
 # "Iowa, USA"); SimplifyJobs writes "United States" and the bare state name.
 _STATE_USA = re.compile(r"^(.+), usa$")
@@ -94,6 +108,10 @@ def normalize_location(location: str) -> str:
         # After the chain, so "Remote in <City>, United Kingdom" settles in one pass.
         if (m := _CITY_UK.match(seg)):
             seg = f"{m.group(1)}, UK"
+        elif (m := _CITY_CANADA.match(seg)) and (ca := _CA_CITIES.get(m.group(2).lower())):
+            seg = f"{m.group(1) or ''}{ca[0]}, {ca[1]}, Canada"
+        elif (m := _CITY_PROV.match(seg)) and _CA_CITIES.get(m.group(1).lower(), ("", ""))[1] == m.group(2):
+            seg = f"{_CA_CITIES[m.group(1).lower()][0]}, {m.group(2)}, Canada"
         if seg not in out:
             out.append(seg)
     return "; ".join(out)
