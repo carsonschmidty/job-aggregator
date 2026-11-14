@@ -744,6 +744,29 @@
         "applyguy-2027-internships": 440,
         "vanshb03-summer2027-internships": 1996
       }
+    },
+    {
+      "date": "2026-11-14",
+      "seed": "697347c5",
+      "budget": 6,
+      "units": [
+        "ingest-2026-11-14",
+        "null-field-backfill-issue-115",
+        "source-repeat-guard-issue-116",
+        "yt6363-source-issue-76",
+        "arlington-hong-kong-locations-issue-120"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1494,
+        "simplify-new-grad-positions": 623,
+        "speedyapply-2027-swe": 3313,
+        "speedyapply-2027-ai": 2608,
+        "applyguy-2027-internships": 437,
+        "vanshb03-summer2027-internships": 1979
+      }
     }
   ]
 }

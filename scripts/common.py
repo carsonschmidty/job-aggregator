@@ -36,6 +36,10 @@ _LOCATION_ALIAS = {
     "london, united kingdom": "London, UK", "singapore, singapore": "Singapore",
     "usa": "United States",
     "remote - united kingdom": "Remote - UK", "remote in united kingdom": "Remote - UK",
+    # speedyapply writes Hong Kong both doubled and bare, like Singapore.
+    "hong kong, hong kong": "Hong Kong",
+    # Arlington, VA is an unincorporated county; SimplifyJobs writes it in full (#120).
+    "arlington, va": "Arlington County, Arlington, VA",
 }
 _REMOTE_IN = re.compile(r"^remote in (.+)$", re.I)
 # speedyapply writes UK cities as "<City>, United Kingdom"; SimplifyJobs writes "<City>, UK".

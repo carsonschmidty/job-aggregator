@@ -80,6 +80,18 @@ def test_normalize_location_international_city_aliases():
     assert normalize_location("Londonderry, UK") == "Londonderry, UK"
 
 
+def test_normalize_location_arlington_and_hong_kong_spellings():
+    assert normalize_location("Arlington, VA") == "Arlington County, Arlington, VA"
+    assert normalize_location("Hong Kong, Hong Kong") == "Hong Kong"
+    assert normalize_location("Arlington, VA; Arlington County, Arlington, VA") == "Arlington County, Arlington, VA"
+    # Another Arlington and the source's truncated cells stay as published (#55).
+    for raw in ("Arlington, TX", "Arlington, VA +2", "Hong Kong, Hong Kong +1", "Hong Kong"):
+        assert normalize_location(raw) == raw
+    for raw in ("Arlington, VA", "Hong Kong, Hong Kong"):
+        once = normalize_location(raw)
+        assert normalize_location(once) == once
+
+
 def test_normalize_location_uk_city_spelling():
     assert normalize_location("Bristol, United Kingdom") == "Bristol, UK"
     assert normalize_location("Newcastle upon Tyne, United Kingdom") == "Newcastle upon Tyne, UK"
