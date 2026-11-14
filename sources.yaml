@@ -65,3 +65,12 @@ sources:
     license: MIT
     files:
       - {raw_url: "https://raw.githubusercontent.com/vanshb03/Summer2027-Internships/dev/README.md", job_type: internship}
+  - name: yt6363-summer-2027-internships
+    repo: yt6363/summer-2027-internships
+    url: https://github.com/yt6363/summer-2027-internships
+    parser: yt6363
+    seed: false
+    added: 2026-11-14
+    license: MIT
+    files:
+      - {raw_url: "https://raw.githubusercontent.com/yt6363/summer-2027-internships/main/README.md", job_type: internship}

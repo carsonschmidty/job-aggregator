@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.parsers import _title_category, parse_applyguy, parse_simplify, parse_speedyapply, parse_vansh
+from scripts.parsers import _title_category, parse_applyguy, parse_simplify, parse_speedyapply, parse_vansh, parse_yt6363
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -87,3 +87,27 @@ def test_vansh_continuations_locked_rows_and_multi_location():
     assert rows[3]["location"] == "Burbank, CA; Remote; United States"
     assert rows[4]["category"] == "hardware" and rows[4]["citizenship"] == "us_citizenship_required"
     assert all(r["job_type"] == "internship" and r["salary"] is None for r in rows)
+
+
+def test_yt6363_section_categories_promo_links_and_escapes():
+    rows = parse_yt6363((FIX / "yt6363.md").read_text(encoding="utf-8"), "internship")
+    assert [r["category"] for r in rows] == ["pm", "pm", "ai_ml_data", "ai_ml_data", None, None, None, None, "swe", "swe"]
+    assert rows[0]["company"] == "Entegris" and rows[2]["company"] == "Nexus One"  # promo link text, plain cell
+    assert not any("findyourrolefirst" in r["apply_url"] + r["url"] for r in rows)
+    assert rows[2]["apply_url"] == "https://jobs.ashbyhq.com/nexus-cognitive/22c64819-67fc-48d0-b206-5b41d370f6a5/application"
+    assert rows[2]["url"] == rows[2]["apply_url"]
+    assert rows[1]["title"] == "Program Manager Intern [Summer 2027] 🛂" and rows[9]["title"] == "Software Engineer Intern (C#)"
+    assert rows[3]["location"].endswith("(+6 more)")
+    assert rows[7]["location"] == "US-TX-MCKINNEY-513PW ~ 2501 W University Dr ~ PW BLDG"
+    assert rows[0]["sponsorship"] is None  # 🛂 marks a likely sponsor here, not no_sponsorship
+    assert all(r["job_type"] == "internship" and r["salary"] is None and r["citizenship"] is None for r in rows)
+
+
+def test_yt6363_title_fallback_outside_mapped_sections_and_linkless_rows():
+    text = (
+        "## Business, marketing and finance\n\n| Company | Role | Location | Posted | Apply |\n|---|---|---|---|---|\n"
+        "| Acme | Business Intelligence Intern | Remote | 2d | [Apply](https://jobs.example.com/1) |\n"
+        "| Acme | Finance Intern | Remote | 2d | |\n"
+    )
+    rows = parse_yt6363(text, "internship")
+    assert [(r["title"], r["category"]) for r in rows] == [("Business Intelligence Intern", "ai_ml_data")]
