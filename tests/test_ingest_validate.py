@@ -167,6 +167,13 @@ def test_dedupe_consolidate_never_repeats_a_source():
     assert [s["source"] for s in survivors[0]["sources"]] == ["s1", "s2"]
 
 
+def test_validate_rejects_a_repeated_source(tmp_path):
+    r = rec("Acme", "SWE Intern", "https://a.com/1")
+    r["sources"].append(dict(r["sources"][0]))
+    save_store([r], tmp_path / "jobs.jsonl")
+    assert any("more than once" in e for e in validate.validate(tmp_path / "jobs.jsonl"))
+
+
 def test_validate_rejects_unnormalized_location(tmp_path):
     r = rec("Acme", "SWE Intern", "https://a.com/1")
     r["location"] = "NYC"
