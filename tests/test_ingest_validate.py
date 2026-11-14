@@ -34,6 +34,21 @@ def test_merge_fills_missing_category_but_never_overwrites():
     assert [r["category"] for r in store] == ["hardware", "ai_ml_data"]
 
 
+def test_merge_fills_missing_sponsorship_citizenship_and_salary_but_never_overwrites():
+    store = []
+    ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1"), rec("Acme", "Data Intern", "https://a.com/2")], "2026-10-01")
+    store[1].update(sponsorship="no_sponsorship", salary="$40/hr")
+    fuzzy = rec("Acme", "SWE Intern.", "https://a.com/other", source="s2")
+    same_id = rec("Acme", "Data Intern", "https://a.com/2", source="s2")
+    fuzzy.update(sponsorship="no_sponsorship", citizenship="us_citizenship_required", salary="$50/hr")
+    same_id.update(citizenship="us_citizenship_required", salary="$50/hr")
+    ingest.merge(store, [fuzzy, same_id], "2026-10-02")
+    assert [(r["sponsorship"], r["citizenship"], r["salary"]) for r in store] == [
+        ("no_sponsorship", "us_citizenship_required", "$50/hr"),  # fuzzy hit fills every null
+        ("no_sponsorship", "us_citizenship_required", "$40/hr"),  # id hit fills citizenship only
+    ]
+
+
 def test_merge_reopens_closed_records_on_id_and_fuzzy_hits():
     store = [rec("Acme", "SWE Intern", "https://a.com/1"), rec("Acme", "Data Intern", "https://a.com/2")]
     for r in store:
@@ -118,6 +133,18 @@ def test_dedupe_consolidates_pairs_into_the_record_seen_first():
     assert summary["merged"] == [{"removed": new["id"], "into": old["id"], "company": "Acme", "title": "SWE Intern"}]
     assert survivors[0]["status"] == "open" and survivors[0]["last_seen"] == "2026-10-14"
     assert {s["source"] for s in survivors[0]["sources"]} == {"s1", "s2"}
+
+
+def test_dedupe_fills_missing_sponsorship_citizenship_and_salary_but_never_overwrites():
+    from scripts import dedupe
+    old = rec("Acme", "SWE Intern", "https://a.com/1")
+    new = rec("Acme", "SWE Intern", "https://a.com/2", source="s2")
+    old.update(first_seen="2026-09-28", citizenship="us_citizenship_required", salary="$40/hr")
+    new.update(sponsorship="no_sponsorship", salary="$50/hr")
+    survivors, _ = dedupe.consolidate([new, old])
+    assert [r["id"] for r in survivors] == [old["id"]]
+    assert (survivors[0]["sponsorship"], survivors[0]["citizenship"], survivors[0]["salary"]) == (
+        "no_sponsorship", "us_citizenship_required", "$40/hr")
 
 
 def test_validate_rejects_unnormalized_location(tmp_path):
