@@ -33,9 +33,9 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 | `job_type` | string | `internship` or `new_grad` |
 | `first_seen`, `last_seen` | date | ISO dates |
 | `status` | string | `open` or `closed`; a closed record returns to `open` when a source relists it |
-| `sponsorship` | string or null | `no_sponsorship` when the source flags it |
-| `citizenship` | string or null | `us_citizenship_required` when the source flags it |
-| `salary` | string or null | Verbatim from source when present |
+| `sponsorship` | string or null | `no_sponsorship` when the source flags it; a null may be filled from a later source, a set value is never overwritten |
+| `citizenship` | string or null | `us_citizenship_required` when the source flags it; a null may be filled from a later source, a set value is never overwritten |
+| `salary` | string or null | Verbatim from source when present; a null may be filled from a later source, a set value is never overwritten |
 | `schema_version` | int | Bumped on breaking changes |
 
 Duplicates are prevented by an exact id check plus a fuzzy match (same company and job type, title similarity at least 0.9, same language or platform names in the title, overlapping location). `python -m scripts.validate` fails on either.

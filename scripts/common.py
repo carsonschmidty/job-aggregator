@@ -158,6 +158,16 @@ def is_fuzzy_match(a: dict, b: dict, threshold: float = 0.9) -> bool:
     return not la or not lb or bool(la & lb)
 
 
+FILLABLE = ("category", "sponsorship", "citizenship", "salary")
+
+
+def fill_gaps(hit: dict, rec: dict) -> None:
+    """Copy each null FILLABLE field of `hit` from `rec`; a stored value is never overwritten."""
+    for f in FILLABLE:
+        if hit.get(f) is None and rec.get(f):
+            hit[f] = rec[f]
+
+
 def load_store(path: Path = STORE) -> list[dict]:
     if not path.exists():
         return []

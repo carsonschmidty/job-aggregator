@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 
-from .common import is_fuzzy_match, load_store, normalize, normalize_location, save_store
+from .common import fill_gaps, is_fuzzy_match, load_store, normalize, normalize_location, save_store
 
 
 def consolidate(store: list[dict]) -> tuple[list[dict], dict]:
@@ -36,8 +36,7 @@ def consolidate(store: list[dict]) -> tuple[list[dict], dict]:
         hit["last_seen"] = max(hit["last_seen"], rec["last_seen"])
         if rec["status"] == "open":
             hit["status"] = "open"
-        if hit.get("category") is None:
-            hit["category"] = rec.get("category")
+        fill_gaps(hit, rec)
         merged.append({"removed": rec["id"], "into": hit["id"], "company": rec["company"], "title": rec["title"]})
     survivors = [r for g in by_company.values() for r in g]
     return survivors, {"relocated": relocated, "merged": merged, "total": len(survivors)}

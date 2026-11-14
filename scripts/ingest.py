@@ -18,7 +18,7 @@ from pathlib import Path
 
 import yaml
 
-from .common import ROOT, SCHEMA_VERSION, is_fuzzy_match, load_store, make_id, normalize, normalize_location, save_store
+from .common import ROOT, SCHEMA_VERSION, fill_gaps, is_fuzzy_match, load_store, make_id, normalize, normalize_location, save_store
 from .dedupe import consolidate
 from .parsers import parse_applyguy, parse_simplify, parse_speedyapply, parse_vansh
 
@@ -115,8 +115,7 @@ def merge(store: list[dict], incoming: list[dict], today: str, seen: set[str] | 
         hit["last_seen"], hit["status"] = today, "open"  # a source lists it again; closed is not terminal
         if rec["id"] == hit["id"] and _gains_separators(hit["location"], rec["location"]):
             hit["location"] = rec["location"]
-        if hit.get("category") is None and rec.get("category"):
-            hit["category"] = rec["category"]  # fill gaps left by an older parser; never overwrite
+        fill_gaps(hit, rec)  # fill gaps left by an older parser or another source; never overwrite
         stats["updated"] += 1
     return stats
 
