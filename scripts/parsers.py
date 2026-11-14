@@ -174,4 +174,49 @@ def parse_vansh(text: str, job_type: str) -> list[dict]:
     return rows
 
 
-PARSERS = {"simplify": parse_simplify, "speedyapply": parse_speedyapply, "applyguy": parse_applyguy, "vansh": parse_vansh}
+_MD_CELL_LINK = re.compile(r"^\[((?:\\.|[^\]\\])*)\]\([^)]*\)$")
+_MD_ESCAPE = re.compile(r"\\([\\`*_{}\[\]()#+\-.!|~<>])")
+_YT_SECTION = {"Product management": "pm", "Data, analytics and AI": "ai_ml_data", "Software engineering": "swe"}
+
+
+def _md_text(cell: str) -> str:
+    """Markdown cell to plain text: a whole-cell link keeps its text, backslash escapes are dropped."""
+    return _MD_ESCAPE.sub(r"\1", _MD_CELL_LINK.sub(r"\1", _text(cell)))
+
+
+def parse_yt6363(text: str, job_type: str) -> list[dict]:
+    """yt6363 READMEs: one markdown table per '## <section>'; the company link is promotional, only Apply is kept."""
+    rows, cols, section = [], None, ""
+    for line in text.splitlines():
+        if line.startswith("## "):
+            section = line[3:].strip()
+        if not line.startswith("|"):
+            cols = None if line.strip() else cols
+            continue
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if cells and cells[0] == "Company":
+            cols = [c.lower() for c in cells]
+            continue
+        if cols is None or set(line.replace("|", "").strip()) <= {"-", " ", ":"}:
+            continue
+        rec = dict(zip(cols, cells))
+        title = _md_text(rec.get("role", ""))
+        links = [_clean_url(u) for u in _MD_LINK.findall(rec.get("apply", ""))]
+        if not links or not title:
+            continue
+        rows.append({
+            "company": _md_text(rec.get("company", "")), "title": title,
+            "location": _md_text(rec.get("location", "")), "apply_url": links[0], "url": links[0],
+            # Design and Business sections have no category value; fall back to the title.
+            "category": _YT_SECTION.get(section) or _title_category(title), "job_type": job_type,
+            # 🛂 here marks a likely H-1B sponsor, the reverse of what _flags reads; the
+            # contract has no value for it, so the mark stays in the title only.
+            "salary": None, "sponsorship": None, "citizenship": None,
+        })
+    return rows
+
+
+PARSERS = {
+    "simplify": parse_simplify, "speedyapply": parse_speedyapply, "applyguy": parse_applyguy,
+    "vansh": parse_vansh, "yt6363": parse_yt6363,
+}

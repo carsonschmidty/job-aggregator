@@ -14,6 +14,7 @@ Data lives in [`data/jobs.jsonl`](data/jobs.jsonl): one JSON object per line.
 | [speedyapply/2027-AI-College-Jobs](https://github.com/speedyapply/2027-AI-College-Jobs) | AI/ML internships and new grad, USA and international |
 | [ApplyGuy/2027-Internships](https://github.com/ApplyGuy/2027-Internships) | Internships, MIT licensed; category inferred from title, may be null |
 | [vanshb03/Summer2027-Internships](https://github.com/vanshb03/Summer2027-Internships) | Internships, MIT licensed; `apply_url` is the source's `go.vansh.nyc` redirect, category inferred from title, may be null |
+| [yt6363/summer-2027-internships](https://github.com/yt6363/summer-2027-internships) | Internships, MIT licensed; category from the section heading, Design and Business rows inferred from title, may be null; a 🛂 in its titles marks a likely H-1B sponsor, so `sponsorship` stays null |
 
 All listings are attributed to their origin in each record's `sources[]`. The registry is [`sources.yaml`](sources.yaml); see [`docs/SOURCES.md`](docs/SOURCES.md) for licensing notes and the monthly source-review policy.
 
@@ -25,7 +26,7 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 |---|---|---|
 | `id` | string | 16 hex chars of sha256(normalized company + title + canonical apply URL) |
 | `company`, `title` | string | As published |
-| `location` | string | Per `;`-separated segment, short forms are mapped to the `City, ST` spelling (`NYC`, `SF`, `LA`), speedyapply country spellings to the SimplifyJobs form (`<City>, UK` for `<City>, United Kingdom`, `Singapore`, `<City>, <PROV>, Canada` for `<City>, Canada` and `<City>, <PROV>` when the store already has that SimplifyJobs spelling (`Montréal` becomes `Montreal`), `United States`, bare state names such as `Iowa`) and remote variants to `Remote - <region>` (`Remote - UK`); multi-location rows are joined with `; `. speedyapply and ApplyGuy truncate some multi-location rows to the first location plus a `+N` count (`Cambridge, MA +1`); the marker is kept as published and the other locations are not in the source, so match on a prefix rather than equality when filtering by city |
+| `location` | string | Per `;`-separated segment, short forms are mapped to the `City, ST` spelling (`NYC`, `SF`, `LA`), speedyapply country spellings to the SimplifyJobs form (`<City>, UK` for `<City>, United Kingdom`, `Singapore`, `<City>, <PROV>, Canada` for `<City>, Canada` and `<City>, <PROV>` when the store already has that SimplifyJobs spelling (`Montréal` becomes `Montreal`), `United States`, bare state names such as `Iowa`) and remote variants to `Remote - <region>` (`Remote - UK`); multi-location rows are joined with `; `. speedyapply and ApplyGuy truncate some multi-location rows to the first location plus a `+N` count (`Cambridge, MA +1`), and yt6363 to a `(+N more)` count (`Princeton NJ US (+6 more)`); the marker is kept as published and the other locations are not in the source, so match on a prefix rather than equality when filtering by city |
 | `apply_url` | string | Direct application link, tracking params intact |
 | `url` | string | Detail page if the source offers one, else `apply_url` |
 | `sources` | array | `[{source, source_url}]`, one entry per feeder listing it |
@@ -33,7 +34,7 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 | `job_type` | string | `internship` or `new_grad` |
 | `first_seen`, `last_seen` | date | ISO dates |
 | `status` | string | `open` or `closed`; a closed record returns to `open` when a source relists it |
-| `sponsorship` | string or null | `no_sponsorship` when the source flags it; a null may be filled from a later source, a set value is never overwritten |
+| `sponsorship` | string or null | `no_sponsorship` when the source flags it; a null may be filled from a later source, a set value is never overwritten. Emoji in `title` are kept as published and mean different things per source (a SimplifyJobs-style 🛂 is no sponsorship, a yt6363 🛂 is a likely H-1B sponsor), so read this field rather than the title |
 | `citizenship` | string or null | `us_citizenship_required` when the source flags it; a null may be filled from a later source, a set value is never overwritten |
 | `salary` | string or null | Verbatim from source when present; a null may be filled from a later source, a set value is never overwritten |
 | `schema_version` | int | Bumped on breaking changes |
