@@ -30,6 +30,9 @@ def validate(path: Path = STORE) -> list[str]:
             errors.append(f"line {n}: schema_version {rec['schema_version']} != {SCHEMA_VERSION}")
         if not rec["sources"]:
             errors.append(f"line {n}: empty sources[]")
+        names = [s.get("source") for s in rec["sources"]]
+        if len(names) != len(set(names)):
+            errors.append(f"line {n}: sources[] lists a source more than once")
         if not rec["apply_url"].startswith("http"):
             errors.append(f"line {n}: apply_url not http(s)")
         if rec["id"] != make_id(rec["company"], rec["title"], rec["apply_url"]):

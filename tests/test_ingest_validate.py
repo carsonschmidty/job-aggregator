@@ -24,6 +24,15 @@ def test_merge_rejects_exact_and_fuzzy_duplicates_and_appends_sources():
     assert {s["source"] for s in store[0]["sources"]} == {"s1", "s2"}
 
 
+def test_merge_never_repeats_a_source():
+    store = []
+    for day in ("2026-10-01", "2026-10-02"):
+        ingest.merge(store, [rec("Acme", "SWE Intern", "https://a.com/1")], day)  # id hit on the second run
+    ingest.merge(store, [rec("Acme", "SWE Intern.", "https://a.com/other", location="NYC, NY")], "2026-10-03")  # fuzzy hit
+    assert len(store) == 1
+    assert [s["source"] for s in store[0]["sources"]] == ["s1"]
+
+
 def test_merge_fills_missing_category_but_never_overwrites():
     store = []
     ingest.merge(store, [rec("Acme", "Firmware Intern", "https://a.com/1"), rec("Acme", "Data Intern", "https://a.com/2")], "2026-10-01")
@@ -145,6 +154,24 @@ def test_dedupe_fills_missing_sponsorship_citizenship_and_salary_but_never_overw
     assert [r["id"] for r in survivors] == [old["id"]]
     assert (survivors[0]["sponsorship"], survivors[0]["citizenship"], survivors[0]["salary"]) == (
         "no_sponsorship", "us_citizenship_required", "$40/hr")
+
+
+def test_dedupe_consolidate_never_repeats_a_source():
+    from scripts import dedupe
+    old = rec("Acme", "SWE Intern", "https://a.com/1", location="NYC")
+    new = rec("Acme", "SWE Intern", "https://a.com/2", location="New York City, NY")
+    new["sources"].append({"source": "s2", "source_url": "https://y"})
+    old["first_seen"] = "2026-09-28"
+    survivors, _ = dedupe.consolidate([new, old])
+    assert len(survivors) == 1
+    assert [s["source"] for s in survivors[0]["sources"]] == ["s1", "s2"]
+
+
+def test_validate_rejects_a_repeated_source(tmp_path):
+    r = rec("Acme", "SWE Intern", "https://a.com/1")
+    r["sources"].append(dict(r["sources"][0]))
+    save_store([r], tmp_path / "jobs.jsonl")
+    assert any("more than once" in e for e in validate.validate(tmp_path / "jobs.jsonl"))
 
 
 def test_validate_rejects_unnormalized_location(tmp_path):
