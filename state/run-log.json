@@ -767,6 +767,29 @@
         "applyguy-2027-internships": 437,
         "vanshb03-summer2027-internships": 1979
       }
+    },
+    {
+      "date": "2026-11-15",
+      "seed": "faded62d",
+      "budget": 6,
+      "units": [
+        "ingest-2026-11-15",
+        "fuzzy-term-degree-folds-issue-123",
+        "yt6363-location-shapes-issue-124",
+        "applyguy-dropped-rows-issue-125"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1444,
+        "simplify-new-grad-positions": 615,
+        "speedyapply-2027-swe": 3306,
+        "speedyapply-2027-ai": 2650,
+        "applyguy-2027-internships": 423,
+        "vanshb03-summer2027-internships": 1971,
+        "yt6363-summer-2027-internships": 212
+      }
     }
   ]
 }
