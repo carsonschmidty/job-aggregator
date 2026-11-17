@@ -39,7 +39,7 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 | `salary` | string or null | Verbatim from source when present; a null may be filled from a later source, a set value is never overwritten |
 | `schema_version` | int | Bumped on breaking changes |
 
-Duplicates are prevented by an exact id check plus a fuzzy match (same company and job type, title similarity at least 0.9, same language or platform names in the title, overlapping location). `python -m scripts.validate` fails on either.
+Duplicates are prevented by an exact id check plus a fuzzy match (same company and job type, title similarity at least 0.9, same language or platform names in the title, overlapping location). `python -m scripts.validate` fails on either. A shared generic place-name word (`San`, `Santa`, `Fort`, `Beach`, `County` and similar) is not an overlap on its own, so Santa Clara and Santa Rosa stay apart, while a location made only of such words (`Mountain View, CA`) still overlaps on them.
 
 Open records that share a canonical apply URL under different ids are not merged; [`docs/shared-apply-urls.md`](docs/shared-apply-urls.md) lists them and is regenerated with `python -m scripts.report` (#68).
 
