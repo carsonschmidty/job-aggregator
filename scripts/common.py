@@ -75,6 +75,16 @@ _US_STATES = {s.lower(): s for s in (
 # Tokens too generic to count as a location overlap: "city" (New York City vs Salt Lake
 # City) and two-letter state or country codes (Irvine, CA vs Los Angeles, CA).
 _LOCATION_STOP = {"city"}
+# Place-name parts that unrelated places share (Santa Clara vs Santa Rosa, Fort Lauderdale vs
+# Fort Wayne, Arlington County vs Orange County). Sharing one is not an overlap by itself. They
+# are not stop words: a location made only of them (Mountain View, CA; South SF) keeps its tokens
+# and still overlaps on them, instead of ending up empty and matching every location.
+_LOCATION_GENERIC = frozenset({
+    "county", "new", "san", "santa", "north", "south", "east", "west", "fort", "saint", "beach", "park",
+    "lake", "springs", "valley", "falls", "heights", "island", "bay", "mountain", "port", "los", "las",
+    "del", "village", "township", "hills", "the", "and", "view", "grove", "mount", "point", "river",
+    "creek", "station",
+})
 
 # Language and platform names that make two otherwise near-identical titles different roles
 # (Jump Trading lists "Campus C++ Software Engineer - Intern" and "Campus Python Software
@@ -159,7 +169,12 @@ def is_fuzzy_match(a: dict, b: dict, threshold: float = 0.9) -> bool:
     if min(SequenceMatcher(None, ta, tb).ratio(), SequenceMatcher(None, tb, ta).ratio()) < threshold:
         return False
     la, lb = _loc_tokens(a["location"]), _loc_tokens(b["location"])
-    return not la or not lb or bool(la & lb)
+    if not la or not lb:
+        return True
+    # A generic place-name part counts only when one side has nothing else (Mountain View, CA).
+    if la <= _LOCATION_GENERIC or lb <= _LOCATION_GENERIC:
+        return bool(la & lb)
+    return bool((la & lb) - _LOCATION_GENERIC)
 
 
 FILLABLE = ("category", "sponsorship", "citizenship", "salary")

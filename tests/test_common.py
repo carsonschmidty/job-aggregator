@@ -156,3 +156,44 @@ def test_fuzzy_match_sees_cross_source_location_overlap():
     # "city" and two-letter state codes alone are not an overlap
     assert not is_fuzzy_match(base, {**base, "location": "Salt Lake City, UT"})
     assert not is_fuzzy_match({**base, "location": "LA"}, {**base, "location": "Irvine, CA"})
+
+
+_SAME_ROLE = {"company": "Acme", "title": "Software Engineer Intern", "job_type": "internship"}
+
+
+def _both_ways(x: str, y: str) -> tuple[bool, bool]:
+    a, b = {**_SAME_ROLE, "location": x}, {**_SAME_ROLE, "location": y}
+    return is_fuzzy_match(a, b), is_fuzzy_match(b, a)
+
+
+def test_fuzzy_match_shared_place_name_part_is_not_an_overlap():
+    # The first five pairs folded a different role into a record at another place (#128).
+    pairs = [
+        ("Santa Clara, CA", "Santa Rosa, CA"),
+        ("Fort Lauderdale, FL", "Fort Wayne, IN"),
+        ("San Francisco, CA", "San Luis Obispo, CA"),
+        ("Redondo Beach, CA", "Manhattan Beach, CA"),
+        ("San Diego, CA", "Los Angeles, CA; San Mateo, CA"),
+        ("Arlington County, Arlington, VA", "Orange County, CA"),
+        ("Arlington, VA", "Wake County, NC"),
+    ]
+    for x, y in pairs:
+        assert _both_ways(x, y) == (False, False), (x, y)
+
+
+def test_fuzzy_match_keeps_overlaps_beyond_place_name_parts():
+    pairs = [
+        ("Mountain View, CA", "Mountain View, CA +1"),  # only generic words: overlap as before
+        ("Salt Lake City, UT", "Salt Lake City, UT +2"),
+        ("NYC", "New York City, NY"),
+        ("Montréal, Canada", "Montreal, QC"),
+        ("Arlington, VA", "Arlington County, Arlington, VA"),
+        ("Remote United States of America (+1 more)", "Remote - Marietta, GA"),  # Vanderlande JR38708
+    ]
+    for x, y in pairs:
+        assert _both_ways(x, y) == (True, True), (x, y)
+
+
+def test_fuzzy_match_generic_only_location_does_not_match_everything():
+    for generic in ("Mountain View, CA", "South SF", "West Point, PA", "Valley, NE"):
+        assert _both_ways(generic, "Austin, TX") == (False, False), generic
