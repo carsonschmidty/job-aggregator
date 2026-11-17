@@ -812,6 +812,31 @@
         "vanshb03-summer2027-internships": 1954,
         "yt6363-summer-2027-internships": 208
       }
+    },
+    {
+      "date": "2026-11-17",
+      "seed": "976fe971",
+      "budget": 6,
+      "units": [
+        "ingest-2026-11-17",
+        "yt6363-guard-hold-issue-131",
+        "applyguy-single-link-rows-issue-125",
+        "location-generic-place-words-issue-128",
+        "term-degree-guard-issue-123",
+        "workday-report-key-issue-132"
+      ],
+      "skipped": false,
+      "skip_reason": null,
+      "status": "complete",
+      "row_counts": {
+        "simplify-summer2027-internships": 1351,
+        "simplify-new-grad-positions": 590,
+        "speedyapply-2027-swe": 3276,
+        "speedyapply-2027-ai": 2623,
+        "applyguy-2027-internships": 437,
+        "vanshb03-summer2027-internships": 1960,
+        "yt6363-summer-2027-internships": 139
+      }
     }
   ]
 }
