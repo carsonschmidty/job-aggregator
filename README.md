@@ -41,7 +41,7 @@ Records are updated in place by `id`. A listing that disappears from every sourc
 
 Duplicates are prevented by an exact id check plus a fuzzy match (same company and job type, title similarity at least 0.9, same language or platform names in the title, no clash of term, year or degree level, overlapping location). `python -m scripts.validate` fails on either. Season, year and degree level are compared separately, and only clash when both titles name one and the values differ: `Summer 2027` and `Winter 2027`, `2026` and `2027`, `PhD` and `MS`, `PhD` and `MS/PhD` stay apart, while `2027 Summer Internship Program` still matches `Summer Internship Program` (#123). A shared generic place-name word (`San`, `Santa`, `Fort`, `Beach`, `County` and similar) is not an overlap on its own, so Santa Clara and Santa Rosa stay apart, while a location made only of such words (`Mountain View, CA`) still overlaps on them.
 
-Open records that share a canonical apply URL under different ids are not merged; [`docs/shared-apply-urls.md`](docs/shared-apply-urls.md) lists them and is regenerated with `python -m scripts.report` (#68).
+Open records that share a canonical apply URL under different ids are not merged; [`docs/shared-apply-urls.md`](docs/shared-apply-urls.md) lists them and is regenerated with `python -m scripts.report` (#68). For that report only, `*.myworkdayjobs.com` URLs that differ by one leading locale segment (`/en-US/`) or by path case count as one URL (#132); ids still come from `canonical_url` as it is.
 
 ## Usage
 
