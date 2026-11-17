@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.parsers import _title_category, parse_applyguy, parse_simplify, parse_speedyapply, parse_vansh, parse_yt6363
+from scripts.parsers import _md_cells, _title_category, parse_applyguy, parse_simplify, parse_speedyapply, parse_vansh, parse_yt6363
 
 FIX = Path(__file__).parent / "fixtures"
 
@@ -26,12 +26,48 @@ def test_speedyapply_rows_salary_and_linkless_rows():
 
 def test_applyguy_original_link_and_category():
     rows = parse_applyguy((FIX / "applyguy.md").read_text(encoding="utf-8"), "internship")
-    assert len(rows) == 3  # row with only the referral link is skipped
+    assert len(rows) == 4  # row with only the referral link is skipped
     assert all("applyguy.ai" not in r["apply_url"] for r in rows)
     assert rows[0]["company"] == "Allegion" and rows[0]["category"] == "swe"
     assert rows[0]["apply_url"].startswith("https://allegion.wd5.myworkdayjobs.com/")
     assert rows[0]["job_type"] == "internship" and rows[0]["salary"] is None
     assert rows[1]["category"] == "hardware"  # "Embedded Design Engineering Intern – Firmware"
+
+
+def test_applyguy_escaped_pipe_stays_in_the_role():
+    nex = parse_applyguy((FIX / "applyguy.md").read_text(encoding="utf-8"), "internship")[3]
+    assert nex["company"] == "Nex" and nex["title"] == "Summer 2027 | Software Engineer Intern (Sports & Fitness)"
+    assert nex["location"] == "San Jose, CA"
+    assert nex["apply_url"] == nex["url"] == "https://job-boards.greenhouse.io/nex/jobs/5421056008"
+
+
+def test_md_cells_split_on_unescaped_pipes_only():
+    assert _md_cells(r"| Nex | Summer 2027 \| Intern | San Jose, CA |") == ["Nex", "Summer 2027 | Intern", "San Jose, CA"]
+    assert _md_cells("| Acme | Finance Intern | |") == ["Acme", "Finance Intern", ""]  # empty last cell kept
+    assert _md_cells("|---|---:|") == ["---", "---:"]
+
+
+def test_markdown_parsers_keep_an_escaped_pipe_inside_the_role():
+    role, link = r"Summer 2027 \| Software Engineer Intern", "https://jobs.example.com/1"
+    speedyapply = (
+        "| Company | Position | Location | Salary | Posting | Age |\n|---|---|---|---|---|---|\n"
+        f'| Acme | {role} | Remote | N/A | <a href="{link}">Apply</a> | 2d |\n'
+    )
+    vansh = (
+        "| Company | Role | Location | Application/Link | Date Posted |\n|---|---|---|---|---|\n"
+        f'| Acme | {role} | Remote | <a href="{link}">Apply</a> | Nov 02 |\n'
+    )
+    yt6363 = (
+        "## Software engineering\n\n| Company | Role | Location | Posted | Apply |\n|---|---|---|---|---|\n"
+        f"| Acme | {role} | Remote | 2d | [Apply]({link}) |\n"
+    )
+    parsed = [
+        parse_speedyapply(speedyapply, "internship", "swe"),
+        parse_vansh(vansh, "internship"),
+        parse_yt6363(yt6363, "internship"),
+    ]
+    expected = [("Acme", "Summer 2027 | Software Engineer Intern", "Remote", link)]
+    assert [[(r["company"], r["title"], r["location"], r["apply_url"]) for r in rows] for rows in parsed] == [expected] * 3
 
 
 def test_title_category_prefers_specific_family_over_generic_engineering_words():

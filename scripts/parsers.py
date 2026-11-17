@@ -30,6 +30,17 @@ def _clean_url(url: str) -> str:
     return html.unescape(url).strip()
 
 
+_CELL_BORDER = re.compile(r"^\||(?<!\\)\|$")
+_CELL_SPLIT = re.compile(r"(?<!\\)\|")
+
+
+def _md_cells(line: str) -> list[str]:
+    r"""Cells of a markdown table line. GFM writes a literal pipe inside a cell as `\|`, so only
+    unescaped pipes separate cells, and the backslash is dropped from the cell text."""
+    body = _CELL_BORDER.sub("", line.strip())
+    return [c.strip().replace(r"\|", "|") for c in _CELL_SPLIT.split(body)]
+
+
 def parse_simplify(text: str, job_type: str) -> list[dict]:
     """SimplifyJobs READMEs: HTML tables under '## <category>' headings."""
     headings = [(m.start(), _CATEGORY[m.group(1)]) for m in _SIMPLIFY_HEADING.finditer(text)]
@@ -63,7 +74,7 @@ def parse_speedyapply(text: str, job_type: str, category: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
@@ -125,7 +136,7 @@ def parse_applyguy(text: str, job_type: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
@@ -152,7 +163,7 @@ def parse_vansh(text: str, job_type: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
@@ -193,7 +204,7 @@ def parse_yt6363(text: str, job_type: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
