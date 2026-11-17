@@ -57,6 +57,53 @@ def test_fuzzy_match_still_accepts_true_variants():
         assert is_fuzzy_match({**base, "title": x}, {**base, "title": y}), (x, y)
 
 
+def test_fuzzy_match_keeps_term_year_and_degree_variants_apart():
+    # Each pair scores at least 0.9, but the titles name two postings with two ATS job ids
+    # (Skydio, Amazon, Google, Capital One; #123). Dotted degrees read like undotted ones.
+    base = {"company": "Acme", "location": "Santa Clara, CA", "job_type": "internship"}
+    pairs = [
+        ("Embedded Software Engineer Intern - Summer 2027", "Embedded Software Engineer Intern - Winter 2027"),
+        ("Software Development Engineer - 2026", "Software Development Engineer - 2027"),
+        ("Software Engineering Intern - PhD - Summer 2027", "Software Engineering Intern - MS - Summer 2027"),
+        ("Current PhD - AI Engineering Internship Program - Summer 2027",
+         "Current Master's - AI Engineering Internship Program - Summer 2027"),
+        ("Ph.D. Intern - AI/ML & Design Automation", "M.S. Intern - AI/ML & Design Automation"),
+    ]
+    for x, y in pairs:
+        assert not is_fuzzy_match({**base, "title": x}, {**base, "title": y}), (x, y)
+    assert is_fuzzy_match({**base, "title": "Software Engineer Intern - Summer 2027"},
+                          {**base, "title": "Software Engineering Intern - Summer 2027"})
+
+
+def test_fuzzy_match_term_guard_needs_a_value_in_both_titles():
+    # Only one title names the year: one Workday req (Brevan Howard JR101597) and one gh_jid
+    # (Figma 6219995004), so each pair is still one listing (#123).
+    bh = {"company": "Brevan Howard", "location": "New York City, NY", "job_type": "internship"}
+    assert is_fuzzy_match(
+        {**bh, "title": "2027 Summer Internship Program - Systematic Trading Technology Software Engineer - New York"},
+        {**bh, "title": "Summer Internship Program - Systematic Trading Technology Software Engineer"})
+    figma = {"company": "Figma", "location": "San Francisco, CA", "job_type": "internship"}
+    assert is_fuzzy_match({**figma, "title": "PhD Intern, Software Engineer - Graphics (2027)"},
+                          {**figma, "title": "PhD Intern - Software Engineer - Graphics 🎓"})
+
+
+def test_fuzzy_match_term_and_degree_lists_conflict_when_they_differ():
+    # Waymo's "PhD" and "MS/PhD" Simulation Realism internships are two postings (gh_jid 8265868
+    # and 8208465), so lists that only share a value still conflict. Google's PhD and BS/MS
+    # part-time internships share none. The same list in another punctuation still matches (#123).
+    base = {"company": "Acme", "location": "London, UK", "job_type": "internship"}
+    pairs = [
+        ("2027 Summer Intern - PhD - Machine Learning - Simulation Realism",
+         "2027 Summer Intern - MS/PhD - Machine Learning - Simulation Realism"),
+        ("Part-Time Software Engineering PhD Intern - 2027", "Part-Time Software Engineering BS/MS Intern - 2027"),
+        ("Software Engineering Co-op - Fall 2027", "Software Engineering Co-op - Summer/Fall 2027"),
+    ]
+    for x, y in pairs:
+        assert not is_fuzzy_match({**base, "title": x}, {**base, "title": y}), (x, y)
+    assert is_fuzzy_match({**base, "title": "2027 Summer Intern - MS/PhD - Software Engineer - Eval Data Infra"},
+                          {**base, "title": "2027 Summer Intern, MS/PhD, Software Engineer, Eval Data Infra"})
+
+
 def test_normalize_location_single_city_aliases():
     assert normalize_location("NYC") == "New York City, NY"
     assert normalize_location("SF") == "San Francisco, CA"

@@ -96,6 +96,25 @@ _TECH_TOKENS = {
     "rust", "kotlin", "swift", "scala", "ruby", "php", "objectivec", "ios", "android", "react", "angular",
 }
 
+# Internship term, start or graduation year, and degree level (#123). Titles that differ only by
+# one of these ("Embedded Software Engineer Intern - Winter 2027" / "... - Summer 2027",
+# "Software Engineering Intern - PhD" / "... - MS") score above the threshold but are usually
+# separate postings with separate apply links. Each kind is its own set, and a set only counts when both
+# titles name a value in it, so "2027 Summer Internship Program" still matches "Summer Internship
+# Program". When both do, the sets must be equal: Waymo's "PhD" and "MS/PhD" Simulation Realism
+# internships are two postings (gh_jid 8265868 and 8208465). A posting retitled to another degree
+# list (Waymo gh_jid 8350832, "MS/PhD" to "BS/MS") therefore gets a new record, and the old one
+# closes once no source lists its title. Years are 2020-2039, so requisition numbers such as 2091
+# are not read as years.
+_SEASONS = {"spring": "spring", "summer": "summer", "fall": "fall", "autumn": "fall", "winter": "winter"}
+_YEAR = re.compile(r"20[23]\d")
+_DEGREES = {
+    "phd": "phd", "doctorate": "phd", "doctorat": "phd",
+    "ms": "master", "msc": "master", "meng": "master", "master": "master", "masters": "master",
+    "bs": "bachelor", "bsc": "bachelor", "bachelor": "bachelor", "bachelors": "bachelor",
+    "undergrad": "bachelor", "undergraduate": "bachelor",
+}
+
 
 def normalize(text: str) -> str:
     """Lowercase, strip emoji/punctuation, collapse whitespace, drop legal suffixes."""
@@ -153,15 +172,30 @@ def _tech_tokens(title: str) -> set[str]:
     return set(normalize(t).split()) & _TECH_TOKENS
 
 
+def _term_sets(title: str) -> tuple[set[str], set[str], set[str]]:
+    """Season, year and degree-level values a title names; dots are dropped so "Ph.D." reads as "phd"."""
+    words = normalize((title or "").replace(".", "")).split()
+    return (
+        {_SEASONS[w] for w in words if w in _SEASONS},
+        {w for w in words if _YEAR.fullmatch(w)},
+        {_DEGREES[w] for w in words if w in _DEGREES},
+    )
+
+
+def _terms_conflict(a: str, b: str) -> bool:
+    """True when both titles name a season, year or degree level and the values of that kind differ."""
+    return any(x and y and x != y for x, y in zip(_term_sets(a), _term_sets(b)))
+
+
 def _loc_tokens(location: str) -> set[str]:
     return {t for t in normalize(normalize_location(location)).split() if len(t) > 2 and t not in _LOCATION_STOP}
 
 
 def is_fuzzy_match(a: dict, b: dict, threshold: float = 0.9) -> bool:
-    """Same company + job type, near-identical title, same language tokens, overlapping location."""
+    """Same company + job type, near-identical title, same language tokens, no term/year/degree conflict, overlapping location."""
     if normalize(a["company"]) != normalize(b["company"]) or a["job_type"] != b["job_type"]:
         return False
-    if _tech_tokens(a["title"]) != _tech_tokens(b["title"]):
+    if _tech_tokens(a["title"]) != _tech_tokens(b["title"]) or _terms_conflict(a["title"], b["title"]):
         return False
     ta, tb = normalize(a["title"]), normalize(b["title"])
     # SequenceMatcher.ratio() is not symmetric; require the threshold in both
