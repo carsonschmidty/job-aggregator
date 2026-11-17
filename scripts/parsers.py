@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import html
 import re
+from urllib.parse import urlsplit
 
 _TAG = re.compile(r"<[^>]+>")
 _HREF = re.compile(r'href="([^"]+)"')
@@ -28,6 +29,17 @@ def _flags(title: str) -> dict:
 
 def _clean_url(url: str) -> str:
     return html.unescape(url).strip()
+
+
+_CELL_BORDER = re.compile(r"^\||(?<!\\)\|$")
+_CELL_SPLIT = re.compile(r"(?<!\\)\|")
+
+
+def _md_cells(line: str) -> list[str]:
+    r"""Cells of a markdown table line. GFM writes a literal pipe inside a cell as `\|`, so only
+    unescaped pipes separate cells, and the backslash is dropped from the cell text."""
+    body = _CELL_BORDER.sub("", line.strip())
+    return [c.strip().replace(r"\|", "|") for c in _CELL_SPLIT.split(body)]
 
 
 def parse_simplify(text: str, job_type: str) -> list[dict]:
@@ -63,7 +75,7 @@ def parse_speedyapply(text: str, job_type: str, category: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
@@ -118,6 +130,9 @@ def _title_category(title: str) -> str | None:
     return next((cat for needle, cat in _TITLE_CATEGORY if needle in low), None)
 
 
+_APPLYGUY_HOSTS = {"applyguy.ai", "www.applyguy.ai"}
+
+
 def parse_applyguy(text: str, job_type: str) -> list[dict]:
     """ApplyGuy READMEs: markdown tables whose Actions cell ends with the original listing link."""
     rows, cols = [], None
@@ -125,17 +140,19 @@ def parse_applyguy(text: str, job_type: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
         if cols is None or set(line.replace("|", "").strip()) <= {"-", " ", ":"}:
             continue
         rec = dict(zip(cols, cells))
-        links = _MD_LINK.findall(rec.get("actions", ""))
+        # The applyguy.ai referral button comes first but is missing on some rows (so far only
+        # Amazon's); only the original posting link is required.
+        links = [u for u in _MD_LINK.findall(rec.get("actions", "")) if urlsplit(u).hostname not in _APPLYGUY_HOSTS]
         title = _text(rec.get("role", ""))
-        if len(links) < 2 or not title:
-            continue  # first link is the applyguy.ai referral; the second is the original posting
+        if not links or not title:
+            continue  # referral-only row: no original posting to keep
         rows.append({
             "company": _text(rec.get("company", "")), "title": title,
             "location": _text(rec.get("location", "")), "apply_url": links[-1],
@@ -152,7 +169,7 @@ def parse_vansh(text: str, job_type: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
@@ -193,7 +210,7 @@ def parse_yt6363(text: str, job_type: str) -> list[dict]:
         if not line.startswith("|"):
             cols = None if line.strip() else cols
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = _md_cells(line)
         if cells and cells[0] == "Company":
             cols = [c.lower() for c in cells]
             continue
