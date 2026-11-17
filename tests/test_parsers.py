@@ -26,7 +26,7 @@ def test_speedyapply_rows_salary_and_linkless_rows():
 
 def test_applyguy_original_link_and_category():
     rows = parse_applyguy((FIX / "applyguy.md").read_text(encoding="utf-8"), "internship")
-    assert len(rows) == 4  # row with only the referral link is skipped
+    assert len(rows) == 5  # row with only the referral link is skipped
     assert all("applyguy.ai" not in r["apply_url"] for r in rows)
     assert rows[0]["company"] == "Allegion" and rows[0]["category"] == "swe"
     assert rows[0]["apply_url"].startswith("https://allegion.wd5.myworkdayjobs.com/")
@@ -39,6 +39,14 @@ def test_applyguy_escaped_pipe_stays_in_the_role():
     assert nex["company"] == "Nex" and nex["title"] == "Summer 2027 | Software Engineer Intern (Sports & Fitness)"
     assert nex["location"] == "San Jose, CA"
     assert nex["apply_url"] == nex["url"] == "https://job-boards.greenhouse.io/nex/jobs/5421056008"
+
+
+def test_applyguy_keeps_a_row_without_the_referral_link():
+    amazon = parse_applyguy((FIX / "applyguy.md").read_text(encoding="utf-8"), "internship")[4]
+    assert amazon["company"] == "Amazon" and amazon["title"] == "Software Development Engineer Intern, Amazon Leo - Summer 2027 (USA)"
+    assert amazon["location"] == "US, WA, Redmond" and amazon["category"] == "swe"
+    url = "https://www.amazon.jobs/en/jobs/10587999/software-development-engineer-intern-amazon-leo-summer-2027-usa"
+    assert amazon["apply_url"] == amazon["url"] == url
 
 
 def test_md_cells_split_on_unescaped_pipes_only():

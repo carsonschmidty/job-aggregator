@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import html
 import re
+from urllib.parse import urlsplit
 
 _TAG = re.compile(r"<[^>]+>")
 _HREF = re.compile(r'href="([^"]+)"')
@@ -129,6 +130,9 @@ def _title_category(title: str) -> str | None:
     return next((cat for needle, cat in _TITLE_CATEGORY if needle in low), None)
 
 
+_APPLYGUY_HOSTS = {"applyguy.ai", "www.applyguy.ai"}
+
+
 def parse_applyguy(text: str, job_type: str) -> list[dict]:
     """ApplyGuy READMEs: markdown tables whose Actions cell ends with the original listing link."""
     rows, cols = [], None
@@ -143,10 +147,12 @@ def parse_applyguy(text: str, job_type: str) -> list[dict]:
         if cols is None or set(line.replace("|", "").strip()) <= {"-", " ", ":"}:
             continue
         rec = dict(zip(cols, cells))
-        links = _MD_LINK.findall(rec.get("actions", ""))
+        # The applyguy.ai referral button comes first but is missing on some rows (so far only
+        # Amazon's); only the original posting link is required.
+        links = [u for u in _MD_LINK.findall(rec.get("actions", "")) if urlsplit(u).hostname not in _APPLYGUY_HOSTS]
         title = _text(rec.get("role", ""))
-        if len(links) < 2 or not title:
-            continue  # first link is the applyguy.ai referral; the second is the original posting
+        if not links or not title:
+            continue  # referral-only row: no original posting to keep
         rows.append({
             "company": _text(rec.get("company", "")), "title": title,
             "location": _text(rec.get("location", "")), "apply_url": links[-1],
