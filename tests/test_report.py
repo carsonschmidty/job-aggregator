@@ -1,4 +1,5 @@
 from scripts import report
+from scripts.common import canonical_url, make_id
 
 
 def rec(id_, company, title, url, status="open", source="s1", location="New York, NY"):
@@ -63,9 +64,69 @@ def test_build_counts_and_render_escapes_pipes():
     ]
     groups, summary = report.build(store)
     assert [g["class"] for g in groups] == ["same_company", "different_company"]
-    assert summary == {"groups": 2, "records": 4, "cross_source": 1, "same_company": 1, "company_prefix": 0,
-                       "different_company": 1, "would_merge": 1, "below_threshold": 0}
+    assert summary == {"groups": 2, "records": 4, "cross_source": 1, "mixed_spelling": 0, "same_company": 1,
+                       "company_prefix": 0, "different_company": 1, "would_merge": 1, "below_threshold": 0}
     text = report.render(groups, summary, "2026-11-01")
     assert "SWE Intern \\| Summer" in text
     assert "as of 2026-11-01" in text
     assert text == report.render(*report.build(list(reversed(store))), "2026-11-01")
+
+
+# One Workday req (R8002) as three feeds publish it; the ids are the ones the store holds (#132).
+CSAA = "https://aaaie.wd1.myworkdayjobs.com/{}/job/Arizona---Home-Teleworkers/Data-Science-Intern_R8002"
+LOCALE = CSAA.format("en-US/csaacareers2")  # speedyapply
+CASE = CSAA.format("CSAACareers2") + "?utm_source=Simplify&ref=Simplify"  # SimplifyJobs
+PLAIN = CSAA.format("csaacareers2")  # yt6363
+
+
+def csaa_records():
+    return [
+        rec("e36057269c632a63", "CSAA Insurance Group", "Data Science Intern", LOCALE, source="speedyapply-2027-ai"),
+        rec("db07d37a29e31149", "CSAA Insurance Group", "Data Science Intern", CASE, source="simplify-summer2027-internships"),
+        rec("0fc2b28ab181ba8d", "Aaaie", "Data Science Intern", PLAIN, source="yt6363-summer-2027-internships"),
+    ]
+
+
+def test_group_key_folds_workday_locale_and_path_case():
+    key = report.group_key(PLAIN)
+    assert key == PLAIN.lower()
+    assert report.group_key(LOCALE) == key  # locale segment only
+    assert report.group_key(CASE) == key  # path case only
+    assert report.group_key(CSAA.format("en-US/CSAACareers2")) == key  # both
+    assert report.group_key(CSAA.format("en-us/csaacareers2")) == key  # lowercase locale
+    # Only one leading segment goes, and the query keeps its case.
+    assert (report.group_key("https://x.wd5.myworkdayjobs.com/fr-CA/en-US/Site/job/A_R1?jobReq=R1")
+            == "https://x.wd5.myworkdayjobs.com/en-us/site/job/a_r1?jobReq=R1")
+
+
+def test_workday_spellings_share_a_group_and_keep_their_ids():
+    store = csaa_records()
+    groups = report.shared_url_groups(store)
+    assert list(groups) == [report.group_key(PLAIN)]
+    assert {r["id"] for r in groups[report.group_key(PLAIN)]} == {r["id"] for r in store}
+    assert report.would_merge(store[0], store[1])
+    # canonical_url and make_id are unchanged: each spelling keeps its own canonical form and stored id.
+    assert canonical_url(LOCALE) == LOCALE
+    assert canonical_url(CASE) == CSAA.format("CSAACareers2")
+    for r in store:
+        assert make_id(r["company"], r["title"], r["apply_url"]) == r["id"]
+
+
+def test_other_hosts_keep_canonical_url():
+    lever = "https://jobs.lever.co/acme/A1b2C3d4"
+    assert report.group_key(lever) == canonical_url(lever)
+    assert report.group_key("https://careers.acme.com/en-US/Job/1") == "https://careers.acme.com/en-US/Job/1"
+    store = [rec("l1", "Acme", "SWE Intern", lever), rec("l2", "Acme", "SWE Intern", lever.lower())]
+    assert report.shared_url_groups(store) == {}
+    assert not report.would_merge(*store)
+
+
+def test_render_shows_each_spelling_when_a_group_mixes_them():
+    store = csaa_records() + [rec("a1", "Acme", "SWE Intern", "https://a.com/1"),
+                              rec("a2", "Acme", "SWE Intern - Summer", "https://a.com/1/?utm_source=x")]
+    groups, summary = report.build(store)
+    assert (summary["groups"], summary["mixed_spelling"]) == (2, 1)
+    text = report.render(groups, summary, "2026-11-16")
+    for url in (LOCALE, CSAA.format("CSAACareers2"), PLAIN):
+        assert text.count(f"<{url}>") == 1
+    assert text.count("<https://a.com/1>") == 1  # one spelling: shown once, on the group's first row

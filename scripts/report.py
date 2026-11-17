@@ -1,4 +1,4 @@
-"""Report open records that share a canonical apply URL under different ids (#68).
+"""Report open records that share an apply URL under different ids (#68).
 
 Usage:
     python -m scripts.report               # write docs/shared-apply-urls.md, print a JSON summary
@@ -7,28 +7,52 @@ Usage:
 Fuzzy match never compares apply URLs, so one posting listed by two feeds with a title gap or
 a different company spelling stays two records. This report lists those groups without
 changing the store, and counts how many a URL-based merge tier (option 1 in #68) would fold.
+
+Records group by `group_key`: `canonical_url`, except that on *.myworkdayjobs.com hosts one
+leading locale segment (/en-US/) is dropped and the path is lowercased, because Workday serves
+one posting under all of those spellings and feeds disagree on them (#132). Grouping,
+`would_merge` and the summary counts all use that key. It is report-only: `canonical_url`, and so
+`make_id` and every stored id, are unchanged.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import re
 from difflib import SequenceMatcher
 from itertools import combinations
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 from .common import ROOT, canonical_url, load_store, normalize
 
 OUT = ROOT / "docs" / "shared-apply-urls.md"
 CLASSES = ("same_company", "company_prefix", "different_company")
 MERGE_THRESHOLD = 0.6  # title similarity proposed for option 1 in #68
+# One leading /<ll>-<CC> locale segment, matched without case since the key lowercases the path
+# anyway; some feeds write /en-us/.
+_WORKDAY_LOCALE = re.compile(r"^/[a-z]{2}-[a-z]{2}(?=/|$)", re.I)
+
+
+def group_key(url: str) -> str:
+    """The URL the report groups by: `canonical_url`, with Workday's locale and path-case spellings folded.
+
+    Only *.myworkdayjobs.com is folded: only Workday was measured (#132), and other ATS paths can
+    carry case-sensitive ids. The query is left as `canonical_url` gives it.
+    """
+    canon = canonical_url(url)
+    parts = urlsplit(canon)
+    if not (parts.hostname or "").endswith(".myworkdayjobs.com"):
+        return canon
+    return urlunsplit(parts._replace(path=_WORKDAY_LOCALE.sub("", parts.path, count=1).lower()))
 
 
 def shared_url_groups(store: list[dict]) -> dict[str, list[dict]]:
-    """Open records by canonical apply URL, keeping URLs with two or more distinct ids."""
+    """Open records by `group_key` of the apply URL, keeping keys with two or more distinct ids."""
     by_url: dict[str, dict[str, dict]] = {}
     for rec in store:
         if rec["status"] == "open":
-            by_url.setdefault(canonical_url(rec["apply_url"]), {}).setdefault(rec["id"], rec)
+            by_url.setdefault(group_key(rec["apply_url"]), {}).setdefault(rec["id"], rec)
     return {
         url: sorted(recs.values(), key=lambda r: (normalize(r["company"]), normalize(r["title"]), r["id"]))
         for url, recs in by_url.items() if len(recs) > 1
@@ -60,8 +84,8 @@ def title_similarity(a: str, b: str) -> float:
 
 
 def would_merge(a: dict, b: dict, threshold: float = MERGE_THRESHOLD) -> bool:
-    """Option 1 of #68 without its job-family token clause: same URL, related company, close title."""
-    if canonical_url(a["apply_url"]) != canonical_url(b["apply_url"]):
+    """Option 1 of #68 without its job-family token clause: same URL key, related company, close title."""
+    if group_key(a["apply_url"]) != group_key(b["apply_url"]):
         return False
     if company_relation(a["company"], b["company"]) == "different":
         return False
@@ -69,12 +93,15 @@ def would_merge(a: dict, b: dict, threshold: float = MERGE_THRESHOLD) -> bool:
 
 
 def build(store: list[dict]) -> tuple[list[dict], dict]:
-    """Return (groups sorted by class then URL, summary counts)."""
+    """Return (groups sorted by class then URL key, summary counts)."""
     groups = []
     for url, recs in shared_url_groups(store).items():
         related = [(a, b) for a, b in combinations(recs, 2) if company_relation(a["company"], b["company"]) != "different"]
+        urls = [canonical_url(r["apply_url"]) for r in recs]
         groups.append({
             "url": url,
+            "urls": urls,  # each record's own spelling, in record order
+            "mixed": len(set(urls)) > 1,
             "class": classify(recs),
             "records": recs,
             "sims": [title_similarity(a["title"], b["title"]) for a, b in related],
@@ -86,6 +113,7 @@ def build(store: list[dict]) -> tuple[list[dict], dict]:
         "groups": len(groups),
         "records": sum(len(g["records"]) for g in groups),
         "cross_source": sum(g["cross_source"] for g in groups),
+        "mixed_spelling": sum(g["mixed"] for g in groups),
         **{c: sum(g["class"] == c for g in groups) for c in CLASSES},
         "would_merge": sum(g["merge"] for g in groups),
         "below_threshold": sum(bool(g["sims"]) and not g["merge"] for g in groups),
@@ -105,14 +133,20 @@ def render(groups: list[dict], summary: dict, as_of: str) -> str:
         f"Generated by `python -m scripts.report` from `data/jobs.jsonl` as of {as_of or 'n/a'} (latest `last_seen`);"
         " do not edit by hand. The report does not change the store (option 2 of #68).",
         "",
-        "Each group is a set of open records whose `apply_url` gives the same `canonical_url` but whose ids differ."
-        " Fuzzy match never compares apply URLs, so these stay separate records.",
+        "Each group is a set of open records whose `apply_url` gives the same URL key but whose ids differ."
+        " The key is `canonical_url`, except on `*.myworkdayjobs.com` hosts, where one leading locale segment"
+        " (`/en-US/`) is dropped and the path is lowercased: Workday serves one posting under each of those"
+        " spellings, and feeds disagree on them (#132). Other hosts keep `canonical_url`, since their paths can"
+        " carry case-sensitive ids. The counts and option 1 below use the same key. It exists only in this report;"
+        " `canonical_url` and record ids are unchanged. Fuzzy match never compares apply URLs, so these stay"
+        " separate records.",
         "",
         "| | Count |",
         "|---|---:|",
         f"| Groups | {summary['groups']} |",
         f"| Records in groups | {summary['records']} |",
         f"| Cross-source groups | {summary['cross_source']} |",
+        f"| Groups whose records spell the URL differently | {summary['mixed_spelling']} |",
         *(f"| `{c}` groups | {summary[c]} |" for c in CLASSES),
         f"| Groups option 1 would merge at title similarity {t} | {summary['would_merge']} |",
         f"| Groups with a same or prefix company pair below {t} | {summary['below_threshold']} |",
@@ -122,6 +156,9 @@ def render(groups: list[dict], summary: dict, as_of: str) -> str:
         " management`). `different_company`: anything else, such as a parent and a subsidiary or a spelling"
         " `normalize` does not join.",
         "- Cross-source: the records' `sources[]` together name two or more sources.",
+        "- `Apply URL` is the `canonical_url` of the records' `apply_url`, on a group's first row. When the records"
+        " spell it differently (a Workday locale segment or path case), every row shows its own record's"
+        " `canonical_url` instead; `Option 1` and `Sim` still fill only a group's first row.",
         f"- Option 1: a group counts when at least one pair of its records has a same or prefix company and a"
         f" title similarity of {t} or more, measured as `is_fuzzy_match` does (`SequenceMatcher` on `normalize`d"
         " titles, lower ratio of the two directions). The job-family token clause is not counted; it could add at"
@@ -140,11 +177,11 @@ def render(groups: list[dict], summary: dict, as_of: str) -> str:
             "|---|---|---|---|---|---|---|---|",
         ]
         for g in members:
-            head = [f"<{_cell(g['url'])}>", "merge" if g["merge"] else "apart",
-                    ", ".join(f"{s:.3f}" for s in g["sims"]) or "-"]
-            for i, r in enumerate(g["records"]):
+            stats = ["merge" if g["merge"] else "apart", ", ".join(f"{s:.3f}" for s in g["sims"]) or "-"]
+            for i, (r, url) in enumerate(zip(g["records"], g["urls"])):
                 sources = ", ".join(s["source"] for s in r["sources"])
-                row = (head if i == 0 else ["", "", ""]) + [
+                link = f"<{_cell(url)}>" if i == 0 or g["mixed"] else ""
+                row = [link] + (stats if i == 0 else ["", ""]) + [
                     f"`{r['id']}`", _cell(r["company"]), _cell(r["title"]), _cell(r["location"]), _cell(sources)]
                 lines.append("| " + " | ".join(row) + " |")
     return "\n".join(lines) + "\n"
