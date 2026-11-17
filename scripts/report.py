@@ -125,7 +125,7 @@ def render(groups: list[dict], summary: dict, as_of: str) -> str:
         f"- Option 1: a group counts when at least one pair of its records has a same or prefix company and a"
         f" title similarity of {t} or more, measured as `is_fuzzy_match` does (`SequenceMatcher` on `normalize`d"
         " titles, lower ratio of the two directions). The job-family token clause is not counted; it could add at"
-        " most the groups in the last row. Job type, language tokens"
+        " most the groups in the last row. Job type, language tokens, the term, year and degree-level guard (#123)"
         " and location, which `is_fuzzy_match` also checks, are not part of the rule.",
         "- `Sim` lists the title similarity of each same or prefix company pair in the group; `-` when there is none.",
     ]
